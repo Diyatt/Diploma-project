@@ -1,3 +1,12 @@
-from django.db import models
+from django.contrib.auth.backends import ModelBackend
+from django.contrib.auth.models import User
 
-# Create your models here.
+class EmailAuthBackend(ModelBackend):
+    """Аутентификация через email вместо username"""
+    def authenticate(self, request, username=None, password=None, **kwargs):
+        try:
+            user = User.objects.get(email=username)
+            if user.check_password(password):
+                return user
+        except User.DoesNotExist:
+            return None
