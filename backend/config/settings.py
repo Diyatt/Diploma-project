@@ -39,7 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
-    'app',
+    'users',
+    'home',
+    'locations',
+    'products',
+    'reviews',
+    'chats',
 ]
 
 MIDDLEWARE = [
@@ -136,5 +141,5 @@ REST_FRAMEWORK = {
     ),
 }
 
-AUTHENTICATION_BACKENDS = ['users.backends.EmailAuthBackend']
+#AUTHENTICATION_BACKENDS = ['users.backends.EmailAuthBackend']
 
