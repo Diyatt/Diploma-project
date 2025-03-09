@@ -16,7 +16,6 @@ class User(models.Model):
     whatsapp_number = models.CharField(max_length=20, blank=True, null=True)
     password = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
-    user_type = models.CharField(max_length=50, choices=[('owner', 'Owner'), ('renter', 'Renter')])
 
 class Category(models.Model):
     category_name = models.CharField(max_length=255)
