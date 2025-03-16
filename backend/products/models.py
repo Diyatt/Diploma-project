@@ -6,6 +6,10 @@ class Category(models.Model):
     category_name = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.category_name
+
+
 class Quality(models.Model):
     QUALITY_TYPES = [
         ('perfect', 'Отличное'),
@@ -13,6 +17,7 @@ class Quality(models.Model):
         ('working', 'Рабочее'),
     ]
     quality_type = models.CharField(max_length=20, choices=QUALITY_TYPES, unique=True)
+
     def __str__(self):
         return dict(self.QUALITY_TYPES)[self.quality_type]
 
@@ -30,3 +35,6 @@ class Product(models.Model):
     image = models.ImageField(upload_to='product_images/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.owner.username})"
