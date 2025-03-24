@@ -104,7 +104,17 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(default=os.getenv("DATABASE_URL"), conn_max_age=600, ssl_require=True)
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',  # Имя базы данных
+        'USER': 'postgres.hniurupvqqhhydpyvxig',  # Имя пользователя
+        'PASSWORD': 'rWsThEECx84SrMGJ',  # Пароль
+        'HOST': 'aws-0-ap-southeast-1.pooler.supabase.com',  # Хост
+        'PORT': '5432',  # Порт для прямого подключения
+        'OPTIONS': {
+            'options': '-c client_encoding=UTF8',  # Кодировка
+        },
+    }
 }
 
 
