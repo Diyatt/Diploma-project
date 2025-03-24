@@ -36,6 +36,7 @@ class Product(models.Model):
     image = CloudinaryField('image', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    average_rating = models.FloatField(default=0)  # Средний рейтинг
 
     def __str__(self):
         return f"{self.name} ({self.owner.username})"

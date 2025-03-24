@@ -17,6 +17,7 @@ import dj_database_url
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+from datetime import timedelta
 
 load_dotenv()
 
@@ -63,8 +64,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'locations',
     'users',
-    'products',
     'reviews',
+    'products',
     'chats',
     'home',
 ]
@@ -165,6 +166,11 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # Access токен живёт час
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),      # Refresh токен живёт 7 дней
 }
 
 AUTH_USER_MODEL = 'users.User'
