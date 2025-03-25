@@ -17,7 +17,7 @@ class ProductListCreateView(generics.ListCreateAPIView):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_class = ProductFilter
     search_fields = ['name']
-    ordering_fields = ['created_at']
+    ordering_fields = ['created_at', 'price']
     ordering = ['-created_at']
     serializer_class = ProductSerializer
     authentication_classes = [JWTAuthentication]
