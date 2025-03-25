@@ -5,6 +5,14 @@ from .models import Product, Review
 from .serializers import ReviewSerializer
 from django.db.models import Avg
 from rest_framework import status
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.generics import ListAPIView
+from .models import Wishlist
+from .serializers import WishlistSerializer
+from rest_framework import generics, permissions
+
+
+
 
 class ProductReviewView(APIView):
     permission_classes = [IsAuthenticated]
@@ -69,3 +77,43 @@ class ReviewDetailView(APIView):
         avg_rating = Review.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg'] or 0
         product.average_rating = round(avg_rating, 1)
         product.save()
+
+class ReviewListView(ListAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['product']
+
+
+class WishlistListView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        wishlist = Wishlist.objects.filter(user=request.user)
+        serializer = WishlistSerializer(wishlist, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        product_id = request.data.get("product_id")
+        if not product_id:
+            return Response({"error": "Product ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        wishlist_item, created = Wishlist.objects.get_or_create(user=request.user, product_id=product_id)
+
+        if not created:
+            return Response({"message": "Product already in wishlist"}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(WishlistSerializer(wishlist_item).data, status=status.HTTP_201_CREATED)
+
+
+class WishlistModifyView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, product_id):
+        wishlist_item = Wishlist.objects.filter(user=request.user, product_id=product_id).first()
+
+        if not wishlist_item:
+            return Response({"error": "Product not in wishlist"}, status=status.HTTP_404_NOT_FOUND)
+
+        wishlist_item.delete()
+        return Response({"message": "Product removed from wishlist"}, status=status.HTTP_204_NO_CONTENT)

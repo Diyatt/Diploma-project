@@ -104,21 +104,21 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+load_dotenv(os.path.join(BASE_DIR, ".env"))
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',  # Имя базы данных
-        'USER': 'postgres.hniurupvqqhhydpyvxig',  # Имя пользователя
-        'PASSWORD': 'rWsThEECx84SrMGJ',  # Пароль
-        'HOST': 'aws-0-ap-southeast-1.pooler.supabase.com',  # Хост
-        'PORT': '5432',  # Порт для прямого подключения
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
         'OPTIONS': {
-            'options': '-c client_encoding=UTF8',  # Кодировка
+            'options': '-c client_encoding=UTF8',
         },
     }
 }
-
-
 
 
 # Password validation
@@ -180,7 +180,6 @@ BACKEND_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:8000")
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
