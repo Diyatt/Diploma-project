@@ -8,12 +8,13 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ['id', 'category_name']
 
 class ProductSerializer(serializers.ModelSerializer):
+    average_rating = serializers.FloatField(read_only=True)
+
     class Meta:
         model = Product
         fields = '__all__'
         extra_kwargs = {
             'owner': {'read_only': True},
-            'average_rating': {'read_only': True}
         }
 
 
