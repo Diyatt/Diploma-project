@@ -18,6 +18,8 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 from datetime import timedelta
+from django.core.asgi import get_asgi_application
+
 
 load_dotenv()
 
@@ -68,6 +70,7 @@ INSTALLED_APPS = [
     'products',
     'chats',
     'home',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -99,6 +102,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = 'config.asgi.application'
 
 
 # Database
@@ -186,3 +190,13 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'bekbolatbekbolat32@gmail.com'
 EMAIL_HOST_PASSWORD = 'pjms fsnp mtdp txnz'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
+
