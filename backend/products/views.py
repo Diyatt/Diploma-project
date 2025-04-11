@@ -8,6 +8,7 @@ from .models import Category, Product
 from .serializers import CategorySerializer, ProductSerializer
 from .filters import ProductFilter
 from .permissions import IsOwnerOrReadOnly
+from rest_framework.views import APIView
 
 class CategoryList(generics.ListAPIView):
     queryset = Category.objects.all()
@@ -41,3 +42,19 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProductSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        # Егер тек көру болса ғана views арттырамыз
+        instance.views += 1
+        instance.save(update_fields=['views'])
+
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+class TopViewedProductsView(APIView):
+    def get(self, request):
+        top_products = Product.objects.order_by('-views')[:3]
+        serializer = ProductSerializer(top_products, many=True)
+        return Response(serializer.data)

@@ -15,7 +15,11 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
         extra_kwargs = {
             'owner': {'read_only': True},
+            'views': {'read_only': True},
+            'created_at': {'read_only': True},
+            'updated_at': {'read_only': True},
         }
+
 
 
 
