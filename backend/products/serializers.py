@@ -9,6 +9,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     average_rating = serializers.FloatField(read_only=True)
+    image = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -19,6 +20,11 @@ class ProductSerializer(serializers.ModelSerializer):
             'created_at': {'read_only': True},
             'updated_at': {'read_only': True},
         }
+
+    def get_image(self, obj):
+        if obj.image:
+            return obj.image.build_url()  # 👈 CloudinaryField ішінен толық URL құру
+        return None
 
 
 

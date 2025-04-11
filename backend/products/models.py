@@ -22,7 +22,6 @@ class Quality(models.Model):
     def __str__(self):
         return dict(self.QUALITY_TYPES)[self.quality_type]
 
-
 class Product(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     views = models.IntegerField(default=0)
@@ -41,3 +40,4 @@ class Product(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.owner.username})"
+
