@@ -33,11 +33,17 @@ class Product(models.Model):
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     piece = models.IntegerField()
-    image = CloudinaryField('image', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     average_rating = models.FloatField(default=0)  # Средний рейтинг
 
     def __str__(self):
         return f"{self.name} ({self.owner.username})"
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
+    image = CloudinaryField('image', null=True, blank=True)
+
+    def __str__(self):
+        return f"Image for {self.product.name}"
 

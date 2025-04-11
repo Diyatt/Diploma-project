@@ -4,7 +4,7 @@ from rest_framework.exceptions import NotFound, PermissionDenied, Authentication
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Category, Product
+from .models import Category, Product, ProductImage
 from .serializers import CategorySerializer, ProductSerializer
 from .filters import ProductFilter
 from .permissions import IsOwnerOrReadOnly
@@ -34,8 +34,10 @@ class ProductListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
-        """Метод perform_create автоматически вызывается при создании объекта."""
-        serializer.save(owner=self.request.user)
+        product = serializer.save(owner=self.request.user)
+        # Көп сурет жүктеу үшін:
+        for file in self.request.FILES.getlist('images'):
+            ProductImage.objects.create(product=product, image=file)
 
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
