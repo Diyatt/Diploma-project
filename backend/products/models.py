@@ -25,6 +25,7 @@ class Quality(models.Model):
 
 class Product(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    views = models.IntegerField(default=0)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     region = models.ForeignKey(Region, on_delete=models.SET_NULL, null=True)
     district = models.ForeignKey(District, on_delete=models.SET_NULL, null=True)
