@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from locations.models import Region
 from locations.models import District
+from cloudinary.models import CloudinaryField
 
 class User(AbstractUser):
     region = models.ForeignKey(Region, on_delete=models.SET_NULL, null=True)
@@ -11,7 +12,7 @@ class User(AbstractUser):
     phone_number = models.CharField(max_length=20)
     password = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
-    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    profile_picture = CloudinaryField('image', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     groups = models.ManyToManyField(Group, related_name="custom_user_groups")
