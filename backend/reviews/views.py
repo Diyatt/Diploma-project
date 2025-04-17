@@ -13,7 +13,6 @@ from rest_framework import generics, permissions
 
 
 
-
 class ProductReviewView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -79,10 +78,10 @@ class ReviewDetailView(APIView):
         product.save()
 
 class ReviewListView(ListAPIView):
-    queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['product']
+    def get_queryset(self):
+        product_id = self.kwargs.get('product_id')
+        return Review.objects.filter(product_id=product_id).order_by('-review_date')
 
 
 class WishlistListView(APIView):
