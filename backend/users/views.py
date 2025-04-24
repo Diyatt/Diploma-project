@@ -10,15 +10,84 @@ from django.contrib.auth import authenticate
 from rest_framework import generics, status
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from .serializers import UserUpdateSerializer
 from django.contrib.auth import get_user_model
+import random
+from django.core.mail import send_mail
+import string
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+    def perform_create(self, serializer):
+        user = serializer.save(is_active=False)  # Деактивирован по умолчанию
+        verification_code = f"{random.randint(100000, 999999)}"
+        user.verification_code = verification_code
+        user.save()
+
+        send_mail(
+            subject="Verify your email",
+            message=f"Your verification code is: {verification_code}",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=False,
+        )
+
+class VerifyEmailCodeView(APIView):
+    def post(self, request):
+        email = request.data.get("email")
+        code = request.data.get("code")
+
+        if not email or not code:
+            return Response({"error": "Email и код обязательны"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # try:
+        #     user = User.objects.get(email=email)
+        # except User.DoesNotExist:
+        #     return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        user = User.objects.filter(email=email).first()
+
+        if not user:
+            return Response({"error": "User not found."}, status=404)
+
+        if user.verification_code != code:
+            return Response({"error": "Invalid verification code"}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.is_active = True
+        user.verification_code = None
+        user.save()
+        return Response({"message": "Email verified successfully!"}, status=status.HTTP_200_OK)
+
+class ResendVerificationCodeView(APIView):
+    def post(self, request):
+        email = request.data.get("email")
+
+        if not email:
+            return Response({"error": "Email is required"}, status=400)
+
+        user = User.objects.filter(email=email).first()
+
+        if not user:
+            return Response({"error": "User not found"}, status=404)
+
+        # Генерируем новый код
+        verification_code = f"{random.randint(100000, 999999)}"
+        user.verification_code = verification_code
+        user.save()
+
+        # Отправляем письмо
+        send_mail(
+            subject="Verify your email again",
+            message=f"Your re-verification code is: {verification_code}",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=False,
+        )
+
+        return Response({"message": "Код повторно отправлен на почту!"}, status=200)
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -37,7 +106,6 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user
-
 
 User = get_user_model()
 
@@ -137,7 +205,6 @@ class UserUpdateView(generics.UpdateAPIView):
 
 class UserDeleteView(APIView):
     permission_classes = [IsAuthenticated]  # Убедитесь, что пользователь аутентифицирован
-
     def delete(self, request, format=None):
         user = request.user  # Получаем текущего аутентифицированного пользователя
 
