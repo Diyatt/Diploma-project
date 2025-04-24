@@ -33,6 +33,9 @@ class ProductListCreateView(generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+    def get_queryset(self):
+        return Product.objects.filter(status='accepted')
+    
     def perform_create(self, serializer):
         product = serializer.save(owner=self.request.user)
         # Көп сурет жүктеу үшін:
@@ -57,6 +60,6 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class TopViewedProductsView(APIView):
     def get(self, request):
-        top_products = Product.objects.order_by('-views')[:3]
+        top_products = Product.objects.filter(status='accepted').order_by('-views')[:3]
         serializer = ProductSerializer(top_products, many=True)
         return Response(serializer.data)

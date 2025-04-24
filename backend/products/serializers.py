@@ -3,9 +3,15 @@ from .models import Category, Product, ProductImage
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()  # Переопределяем image
+
     class Meta:
         model = Category
-        fields = ['id', 'category_name']
+        fields = ['id', 'category_name', 'created_at', 'image']  # убрали 'url'
+
+    def get_image(self, obj):
+        return obj.image.build_url() if obj.image else None
+
 
 class ProductImageSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
@@ -30,6 +36,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'views': {'read_only': True},
             'created_at': {'read_only': True},
             'updated_at': {'read_only': True},
+            'status': {'read_only': True},
         }
 
 
