@@ -61,8 +61,7 @@ class UserSerializer(serializers.ModelSerializer):
 User = get_user_model()
 
 class UserUpdateSerializer(serializers.ModelSerializer):
-    first_name = serializers.CharField(required=False)
-    last_name = serializers.CharField(required=False)
+    full_name = serializers.CharField(required=False)
     email = serializers.EmailField(required=False)
     phone_number = serializers.CharField(required=False)
     district = serializers.PrimaryKeyRelatedField(queryset=District.objects.all(), required=False)
@@ -70,7 +69,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'phone_number', 'district', 'local_address', 'profile_picture']
+        fields = ['full_name', 'email', 'phone_number', 'district', 'local_address', 'profile_picture']
 
     def get_profile_picture(self, obj):
         if obj.profile_picture:
