@@ -1,11 +1,11 @@
 from rest_framework import generics, filters, status
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.exceptions import NotFound, PermissionDenied, AuthenticationFailed
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Category, Product, ProductImage
-from .serializers import CategorySerializer, ProductSerializer
+from .serializers import CategorySerializer, ProductSerializer, ProductImageSerializer
 from .filters import ProductFilter
 from .permissions import IsOwnerOrReadOnly
 from rest_framework.views import APIView
@@ -48,6 +48,21 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        instance.status = 'processing'
+        instance.save(update_fields=['status'])
+
+        
+
+        return Response(serializer.data)
+
+
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
 
@@ -63,3 +78,37 @@ class TopViewedProductsView(APIView):
         top_products = Product.objects.filter(status='accepted').order_by('-views')[:3]
         serializer = ProductSerializer(top_products, many=True)
         return Response(serializer.data)
+    
+
+class DeleteProductImageView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+
+    def delete(self, request, pk, *args, **kwargs):
+        try:
+            image_instance = ProductImage.objects.get(id=pk)
+            image_instance.delete()
+            return Response({"detail": "Image deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        except ProductImage.DoesNotExist:
+            return Response({"detail": "Image not found."}, status=status.HTTP_404_NOT_FOUND)
+
+
+class UploadProductImageView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+
+    def post(self, request, *args, **kwargs):
+        product_id = request.data.get('product')
+        image = request.FILES.get('image')
+
+        if not product_id or not image:
+            return Response({"detail": "Product and image are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            product_instance = Product.objects.get(id=product_id)
+        except ObjectDoesNotExist:
+            return Response({"detail": "Product not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        product_image = ProductImage.objects.create(product=product_instance, image=image)
+        serializer = ProductImageSerializer(product_image)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
