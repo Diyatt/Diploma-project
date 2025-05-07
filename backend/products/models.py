@@ -13,15 +13,17 @@ class Category(models.Model):
 
 
 class Quality(models.Model):
-    QUALITY_TYPES = [
-        ('perfect', 'Отличное'),
-        ('good', 'Хорошее'),
-        ('working', 'Рабочее'),
-    ]
-    quality_type = models.CharField(max_length=20, choices=QUALITY_TYPES, unique=True)
+    QUALITY_TYPES = {
+        'excellent': 'Excellent',
+        'good': 'Good',
+        'average': 'Average',
+        'not_bad': 'Not Bad'
+    }
+    
+    quality_type = models.CharField(max_length=20, unique=True, choices=QUALITY_TYPES.items())
 
     def __str__(self):
-        return dict(self.QUALITY_TYPES)[self.quality_type]
+        return self.QUALITY_TYPES.get(self.quality_type, self.quality_type)
 
 class Product(models.Model):
     STATUS_CHOICES = [
