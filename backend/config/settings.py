@@ -86,7 +86,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:5500",  # Фронтенд (Live Server в VS Code)
+    "http://localhost:3000",  # Фронтенд (Live Server в VS Code)
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -206,4 +206,3 @@ CHANNEL_LAYERS = {
         },
     },
 }
-
