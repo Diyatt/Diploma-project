@@ -21,6 +21,8 @@ class MyProductListView(generics.ListAPIView):
 
     def get_queryset(self):
         return Product.objects.filter(owner=self.request.user)
+    def get_serializer_context(self):
+        return {'request': self.request}
 
 class ProductListCreateView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
@@ -41,6 +43,8 @@ class ProductListCreateView(generics.ListCreateAPIView):
         # Көп сурет жүктеу үшін:
         for file in self.request.FILES.getlist('images'):
             ProductImage.objects.create(product=product, image=file)
+    def get_serializer_context(self):
+        return {'request': self.request}
 
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
@@ -57,10 +61,10 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
 
         instance.status = 'processing'
         instance.save(update_fields=['status'])
-
-        
-
         return Response(serializer.data)
+
+    def get_serializer_context(self):
+        return {'request': self.request}
 
 
     def retrieve(self, request, *args, **kwargs):
@@ -76,7 +80,7 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
 class TopViewedProductsView(APIView):
     def get(self, request):
         top_products = Product.objects.filter(status='accepted').order_by('-views')[:3]
-        serializer = ProductSerializer(top_products, many=True)
+        serializer = ProductSerializer(top_products, many=True, context={'request': request})
         return Response(serializer.data)
     
 

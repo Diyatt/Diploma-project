@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Category, Product, ProductImage
+from reviews.models import Wishlist
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -27,6 +28,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     average_rating = serializers.FloatField(read_only=True)
     images = ProductImageSerializer(many=True, read_only=True)
+    is_favorite = serializers.SerializerMethodField()  # ДОБАВИЛИ
 
     class Meta:
         model = Product
@@ -38,6 +40,10 @@ class ProductSerializer(serializers.ModelSerializer):
             'updated_at': {'read_only': True},
             'status': {'read_only': True},
         }
-
+    def get_is_favorite(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return Wishlist.objects.filter(user=request.user, product=obj).exists()
+        return False
 
 
