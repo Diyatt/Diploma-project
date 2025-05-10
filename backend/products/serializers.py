@@ -28,6 +28,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     average_rating = serializers.FloatField(read_only=True)
     images = ProductImageSerializer(many=True, read_only=True)
+    category_name = serializers.CharField(source='category.category_name', read_only=True)
     is_favorite = serializers.SerializerMethodField()  # ДОБАВИЛИ
 
     class Meta:
