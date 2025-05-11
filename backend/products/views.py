@@ -121,3 +121,16 @@ class QualityListView(generics.ListAPIView):
     queryset = Quality.objects.all()
     serializer_class = QualitySerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+
+class ProductDeleteView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+
+    def delete(self, request, pk, *args, **kwargs):
+        try:
+            product = Product.objects.get(id=pk)
+            self.check_object_permissions(request, product)
+            product.delete()
+            return Response({"detail": "Product deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        except Product.DoesNotExist:
+            return Response({"detail": "Product not found."}, status=status.HTTP_404_NOT_FOUND)
