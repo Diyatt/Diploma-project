@@ -12,11 +12,15 @@ class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     confirm_password = serializers.CharField(write_only=True)
     profile_picture = serializers.SerializerMethodField()
+    region = serializers.StringRelatedField()
+    district = serializers.StringRelatedField()
 
     class Meta:
         model = User
         fields = [
-            'id', 'username', 'email', 'password', 'confirm_password', 'profile_picture'
+            'id', 'username', 'email', 'password', 'confirm_password',
+            'full_name', 'phone_number', 'local_address', 'region',
+            'district', 'profile_picture', 'created_at'
         ]
         extra_kwargs = {'password': {'write_only': True}}
 
