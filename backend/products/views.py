@@ -4,8 +4,8 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticate
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Category, Product, ProductImage
-from .serializers import CategorySerializer, ProductSerializer, ProductImageSerializer
+from .models import Category, Product, ProductImage, Quality
+from .serializers import CategorySerializer, ProductSerializer, ProductImageSerializer, QualitySerializer
 from .filters import ProductFilter
 from .permissions import IsOwnerOrReadOnly
 from rest_framework.views import APIView
@@ -116,3 +116,8 @@ class UploadProductImageView(APIView):
         product_image = ProductImage.objects.create(product=product_instance, image=image)
         serializer = ProductImageSerializer(product_image)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class QualityListView(generics.ListAPIView):
+    queryset = Quality.objects.all()
+    serializer_class = QualitySerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]

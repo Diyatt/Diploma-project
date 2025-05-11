@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, Product, ProductImage
+from .models import Category, Product, ProductImage, Quality
 from reviews.models import Wishlist
 
 
@@ -46,5 +46,11 @@ class ProductSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated:
             return Wishlist.objects.filter(user=request.user, product=obj).exists()
         return False
+
+
+class QualitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Quality
+        fields = ['id', 'quality_type']
 
 
