@@ -113,6 +113,10 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken']
+CORS_PREFLIGHT_MAX_AGE = 86400  # 24 hours
+
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
