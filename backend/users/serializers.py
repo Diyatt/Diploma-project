@@ -87,12 +87,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Этот email уже используется.")
         return value
 
-    def validate_phone_number(self, value):
-        """Проверка формата номера телефона."""
-        if value and not value.replace('+', '').replace(' ', '').isdigit():
-            raise serializers.ValidationError("Номер телефона должен содержать только цифры, пробелы и знак '+'.")
-        return value
-
     def update(self, instance, validated_data):
         """Обновление пользователя с сохранением неизмененных полей."""
         for attr, value in validated_data.items():
