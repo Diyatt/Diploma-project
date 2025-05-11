@@ -36,6 +36,22 @@ class RegisterView(generics.CreateAPIView):
             fail_silently=False,
         )
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        
+        # Generate tokens
+        user = serializer.instance
+        refresh = RefreshToken.for_user(user)
+        
+        return Response({
+            'user': serializer.data,
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+            'message': 'Registration successful. Please verify your email.'
+        }, status=status.HTTP_201_CREATED)
+
 class VerifyEmailCodeView(APIView):
     def post(self, request):
         email = request.data.get("email")
