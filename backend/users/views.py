@@ -16,6 +16,7 @@ from django.contrib.auth import get_user_model
 import random
 from django.core.mail import send_mail
 import string
+from rest_framework import serializers
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -201,7 +202,29 @@ class UserUpdateView(generics.UpdateAPIView):
     def get_object(self):
         """Возвращает текущего аутентифицированного пользователя."""
         return self.request.user
-    
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        
+        try:
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+            return Response({
+                "message": "Профиль успешно обновлен",
+                "user": serializer.data
+            }, status=status.HTTP_200_OK)
+        except serializers.ValidationError as e:
+            return Response({
+                "message": "Ошибка валидации",
+                "errors": e.detail
+            }, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({
+                "message": "Произошла ошибка при обновлении профиля",
+                "error": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class UserDeleteView(APIView):
     permission_classes = [IsAuthenticated]  # Убедитесь, что пользователь аутентифицирован

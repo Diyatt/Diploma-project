@@ -65,11 +65,12 @@ class UserSerializer(serializers.ModelSerializer):
 User = get_user_model()
 
 class UserUpdateSerializer(serializers.ModelSerializer):
-    full_name = serializers.CharField(required=False)
+    full_name = serializers.CharField(required=False, max_length=255)
     email = serializers.EmailField(required=False)
-    phone_number = serializers.CharField(required=False)
+    phone_number = serializers.CharField(required=False, max_length=20)
     district = serializers.PrimaryKeyRelatedField(queryset=District.objects.all(), required=False)
     local_address = serializers.CharField(required=False)
+    profile_picture = serializers.ImageField(required=False)
 
     class Meta:
         model = User
@@ -85,6 +86,20 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         if User.objects.filter(email=value).exclude(id=self.instance.id).exists():
             raise serializers.ValidationError("Этот email уже используется.")
         return value
+
+    def validate_phone_number(self, value):
+        """Проверка формата номера телефона."""
+        if value and not value.replace('+', '').replace(' ', '').isdigit():
+            raise serializers.ValidationError("Номер телефона должен содержать только цифры, пробелы и знак '+'.")
+        return value
+
+    def update(self, instance, validated_data):
+        """Обновление пользователя с сохранением неизмененных полей."""
+        for attr, value in validated_data.items():
+            if value is not None:  # Обновляем только если значение предоставлено
+                setattr(instance, attr, value)
+        instance.save()
+        return instance
 
 class ChangePasswordSerializer(serializers.Serializer):
     current_password = serializers.CharField(write_only=True)
