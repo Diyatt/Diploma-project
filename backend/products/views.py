@@ -77,12 +77,14 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
-class TopViewedProductsView(APIView):
-    def get(self, request):
-        top_products = Product.objects.filter(status='accepted').order_by('-views')[:3]
-        serializer = ProductSerializer(top_products, many=True, context={'request': request})
-        return Response(serializer.data)
+class TopViewedProductsView(generics.ListAPIView):
+    serializer_class = ProductSerializer
     
+    def get_queryset(self):
+        return Product.objects.filter(status='accepted').order_by('-views')[:3]
+    
+    def get_serializer_context(self):
+        return {'request': self.request}
 
 class DeleteProductImageView(APIView):
     authentication_classes = [JWTAuthentication]
