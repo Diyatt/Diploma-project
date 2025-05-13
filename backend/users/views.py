@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework import generics
 from users.models import User
-from users.serializers import UserSerializer, ChangePasswordSerializer
+from users.serializers import UserSerializer, ChangePasswordSerializer, RegisterSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -21,7 +21,7 @@ from rest_framework import serializers
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = RegisterSerializer
 
     def perform_create(self, serializer):
         user = serializer.save(is_active=False)  # Деактивирован по умолчанию
