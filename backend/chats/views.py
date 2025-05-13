@@ -1,7 +1,12 @@
 from rest_framework import generics, permissions
-from .models import Chat, Message
-from .serializers import MessageSerializer, ChatSerializer
+from rest_framework.generics import RetrieveAPIView
 from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticated
+
+from .models import Chat, Message
+from .serializers import ChatSerializer, MessageSerializer
+
+
 
 class MessageListCreateView(generics.ListCreateAPIView):
     serializer_class = MessageSerializer
@@ -67,3 +72,9 @@ class ChatListCreateView(generics.ListCreateAPIView):
             raise ValidationError("Chat between these users already exists.")
         
         serializer.save(user1=user1)
+
+
+class ChatDetailView(RetrieveAPIView):
+    queryset = Chat.objects.all()
+    serializer_class = ChatSerializer
+    permission_classes = [IsAuthenticated]

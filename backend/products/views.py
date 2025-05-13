@@ -9,6 +9,8 @@ from .serializers import CategorySerializer, ProductSerializer, ProductImageSeri
 from .filters import ProductFilter
 from .permissions import IsOwnerOrReadOnly
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
+
 
 class CategoryList(generics.ListAPIView):
     queryset = Category.objects.all()
@@ -47,10 +49,11 @@ class ProductListCreateView(generics.ListCreateAPIView):
         return {'request': self.request}
 
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Product.objects.all()
+    queryset = Product.objects.select_related("owner").all()
     serializer_class = ProductSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
@@ -79,12 +82,11 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class TopViewedProductsView(generics.ListAPIView):
     serializer_class = ProductSerializer
-    
+
     def get_queryset(self):
+        # Сұрыптау және фильтрацияны осында жасаймыз
         return Product.objects.filter(status='accepted').order_by('-views')[:3]
     
-    def get_serializer_context(self):
-        return {'request': self.request}
 
 class DeleteProductImageView(APIView):
     authentication_classes = [JWTAuthentication]

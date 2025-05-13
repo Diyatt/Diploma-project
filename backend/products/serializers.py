@@ -29,11 +29,15 @@ class ProductSerializer(serializers.ModelSerializer):
     average_rating = serializers.FloatField(read_only=True)
     images = ProductImageSerializer(many=True, read_only=True)
     category_name = serializers.CharField(source='category.category_name', read_only=True)
-    is_favorite = serializers.SerializerMethodField()  # ДОБАВИЛИ
+    district_name = serializers.CharField(source='district.name', read_only=True)
+    region_name = serializers.CharField(source='region.name', read_only=True)
+    owner_phone = serializers.SerializerMethodField()
+    quality = serializers.CharField(source='quality.quality_type', read_only=True)  # 🔁 атауын шығарамыз
+    is_favorite = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
-        fields = '__all__'
+        fields = '__all__'  # Барлық өрісті аламыз, бірақ қосымша readable атауларды да қосамыз
         extra_kwargs = {
             'owner': {'read_only': True},
             'views': {'read_only': True},
@@ -41,6 +45,10 @@ class ProductSerializer(serializers.ModelSerializer):
             'updated_at': {'read_only': True},
             'status': {'read_only': True},
         }
+
+    def get_owner_phone(self, obj):
+        return getattr(obj.owner, 'phone_number', None)
+
     def get_is_favorite(self, obj):
         request = self.context.get('request')
         if request and request.user.is_authenticated:
