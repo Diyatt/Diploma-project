@@ -2,7 +2,7 @@ from users.models import User
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import get_user_model
-from locations.models import District
+from locations.models import District, Region
 from .utils import generate_verification_code, send_verification_email  # импорт вспомогалок
 
 
@@ -68,13 +68,14 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(required=False, max_length=255)
     email = serializers.EmailField(required=False)
     phone_number = serializers.CharField(required=False, max_length=20)
+    region = serializers.PrimaryKeyRelatedField(queryset=Region.objects.all(), required=False)
     district = serializers.PrimaryKeyRelatedField(queryset=District.objects.all(), required=False)
     local_address = serializers.CharField(required=False)
     profile_picture = serializers.ImageField(required=False)
 
     class Meta:
         model = User
-        fields = ['full_name', 'email', 'phone_number', 'district', 'local_address', 'profile_picture']
+        fields = ['full_name', 'email', 'phone_number', 'region', 'district', 'local_address', 'profile_picture']
 
     def get_profile_picture(self, obj):
         if obj.profile_picture:
