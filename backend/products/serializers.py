@@ -32,7 +32,7 @@ class ProductSerializer(serializers.ModelSerializer):
     district_name = serializers.CharField(source='district.name', read_only=True)
     region_name = serializers.CharField(source='region.name', read_only=True)
     owner_phone = serializers.SerializerMethodField()
-    quality = serializers.CharField(source='quality.quality_type', read_only=True)  # 🔁 атауын шығарамыз
+    quality_type = serializers.CharField(source='quality.quality_type', read_only=True)  # Для чтения
     is_favorite = serializers.SerializerMethodField()
 
     class Meta:
@@ -44,6 +44,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'created_at': {'read_only': True},
             'updated_at': {'read_only': True},
             'status': {'read_only': True},
+            'quality': {'write_only': True},  # Для записи используем оригинальное поле
         }
 
     def get_owner_phone(self, obj):

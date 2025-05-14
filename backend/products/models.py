@@ -13,17 +13,10 @@ class Category(models.Model):
 
 
 class Quality(models.Model):
-    QUALITY_TYPES = {
-        'excellent': 'Excellent',
-        'good': 'Good',
-        'average': 'Average',
-        'not_bad': 'Not Bad'
-    }
-    
-    quality_type = models.CharField(max_length=20, unique=True, choices=QUALITY_TYPES.items())
+    quality_type = models.CharField(max_length=20, unique=True)
 
     def __str__(self):
-        return self.QUALITY_TYPES.get(self.quality_type, self.quality_type)
+        return self.quality_type
 
 class Product(models.Model):
     STATUS_CHOICES = [
