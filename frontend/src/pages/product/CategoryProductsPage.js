@@ -212,7 +212,7 @@ function CategoryProductsPage() {
                             : [Ecommerce]
                         }
                         rating={Math.round(product.average_rating)}
-                        reviews={product.views}
+                        reviews={product.reviewers}
                       />
                     ))}
                   </div>

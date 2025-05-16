@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Category, Product, ProductImage, Quality
 from reviews.models import Wishlist
+from users.serializers import UserSerializer
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -34,6 +35,7 @@ class ProductSerializer(serializers.ModelSerializer):
     owner_phone = serializers.SerializerMethodField()
     quality_type = serializers.CharField(source='quality.quality_type', read_only=True)  # Для чтения
     is_favorite = serializers.SerializerMethodField()
+    reviewers = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -55,6 +57,9 @@ class ProductSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated:
             return Wishlist.objects.filter(user=request.user, product=obj).exists()
         return False
+
+    def get_reviewers(self, obj):
+        return obj.reviews.values('user').distinct().count()
 
 
 class QualitySerializer(serializers.ModelSerializer):

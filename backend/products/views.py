@@ -85,7 +85,7 @@ class TopViewedProductsView(generics.ListAPIView):
 
     def get_queryset(self):
         # Сұрыптау және фильтрацияны осында жасаймыз
-        return Product.objects.filter(status='accepted').order_by('-views')[:3]
+        return Product.objects.filter(status='accepted').order_by('-views')[:6]
     
 
 class DeleteProductImageView(APIView):

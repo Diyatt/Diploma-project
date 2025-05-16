@@ -61,7 +61,7 @@ function FavoritesPage() {
                             : []
                         }
                         rating={Math.round(item.product.average_rating)}
-                        reviews={item.product.views}
+                        reviews={item.product.reviewers}
                         liked={true}
                         wishlistId={item.id} // 🟥 МІНДЕТТІ! Бұл - `wishlist` жазбасын өшіру үшін керек
                       />

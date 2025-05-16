@@ -213,7 +213,7 @@ function ProductDetailPage() {
                                 <div className="star-rating">
                                   {"\u2605".repeat(Math.round(product.average_rating))}
                                   {"\u2606".repeat(5 - Math.round(product.average_rating))}{" "}
-                                  <span className="text-muted small">{product.views} Reviewer</span>
+                                  <span className="text-muted small">({product.reviewers})</span>
                                 </div>
                               </div>
                               <button className="btn btn-outline-danger btn-sm rounded-circle">♥</button>
@@ -226,7 +226,7 @@ function ProductDetailPage() {
 
                             <div className="row mt-3 mb-2">
                               <div className="col-6"><strong>Category:</strong> {product.category_name || "N/A"}</div>
-                              <div className="col-6"><strong>Quality:</strong> <span className="tag">{product.quality}</span></div>
+                              <div className="col-6"><strong>Quality:</strong> <span className="tag">{product.quality_type}</span></div>
                               <div className="col-6 mt-2"><strong>District:</strong> {product.district_name || product.district}</div>
                               <div className="col-6 mt-2"><strong>Piece:</strong> <span className="tag">{product.piece} </span></div>
                             </div>

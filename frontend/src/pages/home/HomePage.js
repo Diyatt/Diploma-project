@@ -88,9 +88,6 @@ function HomePage() {
               <div className="product-conntent">
                 <div className="product-header d-flex justify-content-between">
                   <h4 className="mb-0">Recommendations</h4>
-                  <a href="#">
-                    View All
-                  </a>
                 </div>
                 <div className="product-body">
                   {loadingProducts ? (
@@ -111,7 +108,7 @@ function HomePage() {
                               : [Ecommerce]
                           }
                           rating={Math.round(product.average_rating)}
-                          reviews={product.views}
+                          reviews={product.reviewers}
                         />
                       ))}
                     </div>

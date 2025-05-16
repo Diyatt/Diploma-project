@@ -50,7 +50,6 @@ function MyChatPages() {
                               return (
                                 <tr key={chat.id} onClick={() => navigate(`/chat/${chat.id}`)} style={{ cursor: 'pointer' }}>
                                   <td><strong>{otherUser.full_name || otherUser.username}</strong></td>
-                                  <td>Chat ID: {chat.id}</td>
                                   <td>{new Date(chat.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
                                 </tr>
                               );
