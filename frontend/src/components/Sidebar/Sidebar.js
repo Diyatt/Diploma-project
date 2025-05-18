@@ -5,7 +5,6 @@ import LogoImage from "../../assets/img/Logo.png";
 import { useUser } from "../../contexts/UserContext";
 import { NavLink ,useNavigate } from 'react-router-dom';
 
-
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const navigate = useNavigate();
   const handleLogin = () => {
@@ -28,7 +27,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       </div>
       <nav className="nav flex-column">
           <NavLink className="nav-link" activeClassName="active" to="/home">
-            <svg 
+            {/* <svg 
               className={`svg-nav ${isOpen ? "d-opacity" : ""}`} 
               width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
             >
@@ -36,7 +35,17 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                   <path d="M11.25 11.8301L3 8.36011V16.0901C3.00888 16.7483 3.3991 17.3414 4 17.6101L11.19 21.0001H11.25V11.8301Z" fill="#4379EE"/>
                   <path d="M12 10.5L20.51 6.93001C20.3668 6.77089 20.1934 6.64173 20 6.55001L12.8 3.18001C12.2936 2.94032 11.7064 2.94032 11.2 3.18001L3.99999 6.55001C3.80655 6.64173 3.63321 6.77089 3.48999 6.93001L12 10.5Z" fill="#4379EE"/>
                   <path d="M12.75 11.8301V21.0001H12.8L20 17.6101C20.5977 17.3429 20.9873 16.7546 21 16.1001V8.36011L12.75 11.8301Z" fill="#4379EE"/>
-              </svg>
+              </svg> */}
+              <svg className={`svg-nav ${isOpen ? "d-opacity" : ""}`} 
+              width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g opacity="0.300291">
+<rect opacity="0.01" width="24" height="24" fill="black"/>
+<path d="M11.25 11.83L3 8.35999V16.09C3.00888 16.7482 3.3991 17.3413 4 17.61L11.19 21H11.25V11.83Z" fill="black"/>
+<path d="M12 10.5L20.51 6.93001C20.3668 6.77089 20.1934 6.64173 20 6.55001L12.8 3.18001C12.2936 2.94032 11.7064 2.94032 11.2 3.18001L3.99999 6.55001C3.80655 6.64173 3.63321 6.77089 3.48999 6.93001L12 10.5Z" fill="black"/>
+<path d="M12.75 11.83V21H12.8L20 17.61C20.5977 17.3428 20.9873 16.7545 21 16.1V8.35999L12.75 11.83Z" fill="black"/>
+</g>
+</svg>
+
 
               <span>Borrow</span>
           </NavLink>
@@ -109,16 +118,16 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               <span>Settings</span>
           </NavLink>
           <a onClick={handleLogout} className="nav-link" style={{ cursor: "pointer" }}>
-            <svg 
-              className={`svg-nav ${isOpen ? "d-opacity" : ""}`} 
-              width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-            >
-                  <g opacity="0.700291">
-                  <rect opacity="0.01" width="24" height="24" fill="black"/>
-                  <path d="M12 13C12.5523 13 13 12.5523 13 12V2C13 1.44772 12.5523 1 12 1C11.4477 1 11 1.44772 11 2V12C11 12.5523 11.4477 13 12 13Z" fill="black"/>
-                  <path d="M16.59 3.1101C16.0985 2.85605 15.494 3.04857 15.24 3.5401C14.9859 4.03164 15.1785 4.63605 15.67 4.8901C18.9496 6.5833 20.6451 10.3004 19.7739 13.887C18.9027 17.4736 15.6909 19.9986 12 19.9986C8.3091 19.9986 5.09727 17.4736 4.22605 13.887C3.35484 10.3004 5.05039 6.5833 8.32999 4.8901C8.64796 4.72576 8.85409 4.40427 8.87075 4.04673C8.88741 3.68919 8.71206 3.34993 8.41075 3.15673C8.10944 2.96354 7.72796 2.94576 7.40999 3.1101C3.31155 5.22751 1.19337 9.87371 2.2829 14.3563C3.37243 18.8389 7.3869 21.9945 12 21.9945C16.6131 21.9945 20.6276 18.8389 21.7171 14.3563C22.8066 9.87371 20.6884 5.22751 16.59 3.1101Z" fill="black"/>
-                  </g>
-              </svg>
+          
+
+              <svg className={`svg-nav ${isOpen ? "d-opacity" : ""}`}  width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g opacity="0.3003">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M11.9999 22C17.5228 22 21.9999 17.5228 21.9999 12C21.9999 6.47715 17.5228 2 11.9999 2C6.81459 2 2.55104 5.94668 2.04932 11H11.5857L8.29283 7.70711L9.70705 6.29289L14.707 11.2929L15.4142 12L14.707 12.7071L9.70705 17.7071L8.29283 16.2929L11.5857 13H2.04932C2.55104 18.0533 6.81459 22 11.9999 22Z" fill="black"/>
+                   </g>
+</svg>
+
+              
+
               <span>Logout</span>
           </a>
       </nav>
