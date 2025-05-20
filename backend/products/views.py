@@ -10,6 +10,8 @@ from .filters import ProductFilter
 from .permissions import IsOwnerOrReadOnly
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
+from rest_framework import serializers
+
 
 
 class CategoryList(generics.ListAPIView):
@@ -42,9 +44,15 @@ class ProductListCreateView(generics.ListCreateAPIView):
     
     def perform_create(self, serializer):
         product = serializer.save(owner=self.request.user)
-        # Көп сурет жүктеу үшін:
-        for file in self.request.FILES.getlist('images'):
+        
+        files = self.request.FILES.getlist('images')
+        if len(files) > 4:
+            product.delete()  # cleanup the just-created product
+            raise serializers.ValidationError("You can upload a maximum of 4 images.")
+
+        for file in files:
             ProductImage.objects.create(product=product, image=file)
+
     def get_serializer_context(self):
         return {'request': self.request}
 
@@ -117,9 +125,13 @@ class UploadProductImageView(APIView):
         except ObjectDoesNotExist:
             return Response({"detail": "Product not found."}, status=status.HTTP_404_NOT_FOUND)
 
+        if product_instance.images.count() >= 4:
+            return Response({"detail": "Maximum of 4 images per product allowed."}, status=status.HTTP_400_BAD_REQUEST)
+
         product_image = ProductImage.objects.create(product=product_instance, image=image)
         serializer = ProductImageSerializer(product_image)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 class QualityListView(generics.ListAPIView):
     queryset = Quality.objects.all()
