@@ -35,6 +35,7 @@ class ProductSerializer(serializers.ModelSerializer):
     owner_phone = serializers.SerializerMethodField()
     quality_type = serializers.CharField(source='quality.quality_type', read_only=True)  # Для чтения
     is_favorite = serializers.SerializerMethodField()
+    wishlist_id = serializers.SerializerMethodField()
     reviewers = serializers.SerializerMethodField()
 
     class Meta:
@@ -60,6 +61,14 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def get_reviewers(self, obj):
         return obj.reviews.values('user').distinct().count()
+    
+    def get_wishlist_id(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            wishlist_entry = Wishlist.objects.filter(user=request.user, product=obj).first()
+            if wishlist_entry:
+                return wishlist_entry.id
+        return None
 
 
 class QualitySerializer(serializers.ModelSerializer):
