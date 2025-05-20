@@ -102,7 +102,7 @@ function LendPage() {
                                       </td>
                                       <td>{product.name || "No name"}</td>
                                       <td>{product.category_name || "No category"}</td>
-                                      <td>${product.price}</td>
+                                      <td>{product.price}₸</td>
                                       <td>{product.piece}</td>
                                       <td>
                                         <span className="badge text-bg-primary">

@@ -23,25 +23,42 @@ function ProductEditPage() {
   const [imageInputs, setImageInputs] = useState([null, null, null, null]); // жаңаларын сақтау
 
   useEffect(() => {
-    api.get(`/products/${id}/`).then(res => {
-      const data = res.data;
-      setFormData({
-        name: data.name,
-        category: data.category,
-        region: data.region,
-        district: data.district,
-        piece: data.piece,
-        price: data.price,
-        quality: data.quality,
-        description: data.description,
-      });
-      setImages(data.images); // [{id, url}, ...]
+  async function fetchData() {
+    const [productRes, categoriesRes, regionsRes, districtsRes, qualitiesRes] = await Promise.all([
+      api.get(`/products/${id}/`),
+      api.get("/categories/"),
+      api.get("/regions/"),
+      api.get("/districts/"),
+      api.get("/qualities/"),
+    ]);
+
+    const productData = productRes.data;
+    const qualitiesList = qualitiesRes.data;
+
+    // Найти quality.id по productData.quality_type
+    const matchedQuality = qualitiesList.find(q => q.quality_type === productData.quality_type);
+
+    setFormData({
+      name: productData.name,
+      category: productData.category,
+      region: productData.region,
+      district: productData.district,
+      piece: productData.piece,
+      price: productData.price,
+      quality: matchedQuality ? matchedQuality.id : "", // вот это ключевая часть
+      description: productData.description,
     });
-    api.get("/categories/").then(res => setCategories(res.data));
-    api.get("/regions/").then(res => setRegions(res.data));
-    api.get("/districts/").then(res => setDistricts(res.data));
-    api.get("/qualities/").then(res => setQualities(res.data));
-  }, [id]);
+
+    setImages(productData.images);
+    setCategories(categoriesRes.data);
+    setRegions(regionsRes.data);
+    setDistricts(districtsRes.data);
+    setQualities(qualitiesList);
+  }
+
+  fetchData();
+}, [id]);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;

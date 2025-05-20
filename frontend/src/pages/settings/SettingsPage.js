@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from '../../components/Sidebar/Sidebar';
-import Header from '../../components/Header/Header';
+import Sidebar from "../../components/Sidebar/Sidebar";
+import Header from "../../components/Header/Header";
 import api from "../../utils/api";
 
 function SettingsPage() {
@@ -24,28 +24,92 @@ function SettingsPage() {
   });
 
   const [regions, setRegions] = useState([]);
+  const [allDistricts, setAllDistricts] = useState([]);
   const [districts, setDistricts] = useState([]);
 
   useEffect(() => {
-    api.get("/users/me/").then(res => {
-      setProfileData({
-        full_name: res.data.full_name || "",
-        email: res.data.email || "",
-        phone_number: res.data.phone_number || "",
-        district: res.data.district || "",
-        region: res.data.region || "",
-        local_address: res.data.local_address || "",
-      });
-      setProfilePicturePreview(res.data.profile_picture); // ✅ preview сақтау
-    });
-
-    api.get("/regions/").then(res => setRegions(res.data));
-    api.get("/districts/").then(res => setDistricts(res.data));
+    const fetchInitialData = async () => {
+      try {
+        const [regionsRes, districtsRes] = await Promise.all([
+          api.get("/regions/"),
+          api.get("/districts/"),
+        ]);
+  
+        const regionsData = regionsRes.data;
+        const districtsData = districtsRes.data;
+  
+        setRegions(regionsData);
+        setAllDistricts(districtsData);
+  
+        const userRes = await api.get("/users/me/");
+        const data = userRes.data;
+  
+        const regionObj = regionsData.find((r) => r.name === data.region);
+        const regionId = regionObj ? regionObj.id : "";
+  
+        const filteredDistricts = districtsData.filter(
+          (d) => d.region.id === regionId
+        );
+        setDistricts(filteredDistricts);
+  
+        // 💡 Extract just "Turksib" from "Turksib (Almaty)"
+        const cleanDistrictName = data.district.split(" (")[0];
+  
+        const districtObj = filteredDistricts.find(
+          (d) => d.name === cleanDistrictName
+        );
+        const districtId = districtObj ? districtObj.id : "";
+  
+        setProfileData({
+          full_name: data.full_name || "",
+          email: data.email || "",
+          phone_number: data.phone_number || "",
+          region: regionId,
+          district: districtId,
+          local_address: data.local_address || "",
+        });
+  
+        setProfilePicturePreview(data.profile_picture);
+      } catch (error) {
+        console.error("Failed to load settings data", error);
+      }
+    };
+  
+    fetchInitialData();
   }, []);
+  
+  useEffect(() => {
+    if (profileData.region) {
+      const filtered = allDistricts.filter(
+        (d) => d.region.id === Number(profileData.region)
+      );
+      setDistricts(filtered);
+      setProfileData((prev) => ({
+        ...prev,
+        district: "", // reset district selection when region changes
+      }));
+    } else {
+      setDistricts([]);
+    }
+  }, [profileData.region, allDistricts]);
+  
+  
+  
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
-    setProfileData(prev => ({ ...prev, [name]: value }));
+
+    if (name === "region" || name === "district") {
+      setProfileData((prev) => ({
+        ...prev,
+        [name]: value === "" ? "" : Number(value),
+      }));
+    } else {
+      setProfileData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handlePictureChange = (e) => {
@@ -54,7 +118,7 @@ function SettingsPage() {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setProfilePicturePreview(reader.result);  // ✅ preview URL ретінде
+        setProfilePicturePreview(reader.result);
       };
       reader.readAsDataURL(file);
     }
@@ -74,19 +138,17 @@ function SettingsPage() {
       await api.put("/update-profile/", formData);
       alert("✅ Профиль сәтті жаңартылды!");
 
-      // 🔁 localStorage-тағы деректі жаңарту
       const updated = await api.get("/users/me/");
       localStorage.setItem("userData", JSON.stringify(updated.data));
-      setProfilePicturePreview(updated.data.profile_picture); // preview де жаңарсын
+      setProfilePicturePreview(updated.data.profile_picture);
     } catch (err) {
       alert("❌ Қате: Профиль жаңартылмады");
     }
   };
 
-
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
-    setPasswordData(prev => ({ ...prev, [name]: value }));
+    setPasswordData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handlePasswordSubmit = async (e) => {
@@ -101,7 +163,10 @@ function SettingsPage() {
 
   return (
     <div className="d-flex">
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(false)} />
+      <Sidebar
+        isOpen={isSidebarOpen}
+        toggleSidebar={() => setIsSidebarOpen(false)}
+      />
       <div className={`content ${isSidebarOpen ? "collapsed" : ""}`}>
         <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
         <div className="main" style={{ marginTop: "60px" }}>
@@ -110,70 +175,140 @@ function SettingsPage() {
               <h4>General Settings</h4>
             </div>
 
-            <div className="card-custom bg-white rounded p-25" style={{ borderRadius: "15px", padding: "45px 180px" }}>
+            <div
+              className="card-custom bg-white rounded p-25"
+              style={{ borderRadius: "15px", padding: "45px 180px" }}
+            >
               <ul className="nav nav-tabs mb-3">
                 <li className="nav-item">
-                  <button className={`nav-link ${activeTab === "info" ? "active" : ""}`} onClick={() => setActiveTab("info")}>Account Settings</button>
+                  <button
+                    className={`nav-link ${
+                      activeTab === "info" ? "active" : ""
+                    }`}
+                    onClick={() => setActiveTab("info")}
+                  >
+                    Account Settings
+                  </button>
                 </li>
                 <li className="nav-item">
-                  <button className={`nav-link ${activeTab === "security" ? "active" : ""}`} onClick={() => setActiveTab("security")}>Login & Security</button>
+                  <button
+                    className={`nav-link ${
+                      activeTab === "security" ? "active" : ""
+                    }`}
+                    onClick={() => setActiveTab("security")}
+                  >
+                    Login & Security
+                  </button>
                 </li>
                 <li className="nav-item">
-                  <button className={`nav-link ${activeTab === "delete" ? "active" : ""}`} onClick={() => setActiveTab("delete")}>Account Deletion</button>
+                  <button
+                    className={`nav-link ${
+                      activeTab === "delete" ? "active" : ""
+                    }`}
+                    onClick={() => setActiveTab("delete")}
+                  >
+                    Account Deletion
+                  </button>
                 </li>
               </ul>
 
               <div className="tab-content p-3">
                 {activeTab === "info" && (
-                  <form onSubmit={handleProfileSubmit} encType="multipart/form-data">
+                  <form
+                    onSubmit={handleProfileSubmit}
+                    encType="multipart/form-data"
+                  >
                     <div className="row g-3">
                       <div className="col-md-6">
                         <label className="form-label">Full Name</label>
-                        <input type="text" name="full_name" value={profileData.full_name} onChange={handleProfileChange} className="form-control form-control-new" />
+                        <input
+                          type="text"
+                          name="full_name"
+                          value={profileData.full_name}
+                          onChange={handleProfileChange}
+                          className="form-control form-control-new"
+                        />
                       </div>
                       <div className="col-md-6">
                         <label className="form-label">Email</label>
-                        <input type="email" name="email" value={profileData.email} onChange={handleProfileChange} className="form-control form-control-new" />
+                        <input
+                          type="email"
+                          name="email"
+                          value={profileData.email}
+                          onChange={handleProfileChange}
+                          className="form-control form-control-new"
+                        />
                       </div>
                       <div className="col-md-6">
                         <label className="form-label">Phone</label>
-                        <input type="text" name="phone_number" value={profileData.phone_number} onChange={handleProfileChange} className="form-control form-control-new" />
+                        <input
+                          type="text"
+                          name="phone_number"
+                          value={profileData.phone_number}
+                          onChange={handleProfileChange}
+                          className="form-control form-control-new"
+                        />
                       </div>
                       <div className="col-md-6">
                         <label className="form-label">Region</label>
-                        <select name="region" value={profileData.region} onChange={handleProfileChange} className="form-select form-control-new">
+                        <select
+                          name="region"
+                          value={profileData.region || ""}
+                          onChange={handleProfileChange}
+                          className="form-select form-control-new"
+                        >
                           <option value="">Select Region</option>
-                          {regions.map(r => (
-                            <option key={r.id} value={r.id}>{r.name}</option>
+                          {regions.map((r) => (
+                            <option key={r.id} value={r.id}>
+                              {r.name}
+                            </option>
                           ))}
                         </select>
                       </div>
                       <div className="col-md-6">
                         <label className="form-label">District</label>
-                        <select name="district" value={profileData.district} onChange={handleProfileChange} className="form-select form-control-new">
+                        <select
+                          name="district"
+                          value={profileData.district || ""}
+                          onChange={handleProfileChange}
+                          className="form-select form-control-new"
+                        >
                           <option value="">Select District</option>
-                          {districts.map(d => (
-                            <option key={d.id} value={d.id}>{d.name}</option>
+                          {districts.map((d) => (
+                            <option key={d.id} value={d.id}>
+                              {d.name}
+                            </option>
                           ))}
                         </select>
                       </div>
                       <div className="col-md-6">
                         <label className="form-label">Local Address</label>
-                        <input type="text" name="local_address" value={profileData.local_address} onChange={handleProfileChange} className="form-control form-control-new" />
+                        <input
+                          type="text"
+                          name="local_address"
+                          value={profileData.local_address}
+                          onChange={handleProfileChange}
+                          className="form-control form-control-new"
+                        />
                       </div>
                       <div className="col-md-12">
                         <label className="form-label">Profile Picture</label>
-                        
+
                         {profilePicturePreview && (
                           <div className="mb-2">
                             <img
                               src={profilePicturePreview}
                               alt="Preview"
-                              style={{ width: "120px", height: "120px", objectFit: "cover", borderRadius: "50%" }}
+                              style={{
+                                width: "120px",
+                                height: "120px",
+                                objectFit: "cover",
+                                borderRadius: "50%",
+                              }}
                             />
                           </div>
                         )}
-                        
+
                         <input
                           type="file"
                           className="form-control form-control-new"
@@ -183,7 +318,9 @@ function SettingsPage() {
                       </div>
                     </div>
                     <div className="text-center mt-4">
-                      <button type="submit" className="start-btn">Update Profile</button>
+                      <button type="submit" className="start-btn">
+                        Update Profile
+                      </button>
                     </div>
                   </form>
                 )}
@@ -193,19 +330,36 @@ function SettingsPage() {
                     <div className="row g-3">
                       <div className="col-md-12">
                         <label className="form-label">Current Password</label>
-                        <input type="password" name="current_password" onChange={handlePasswordChange} className="form-control form-control-new" />
+                        <input
+                          type="password"
+                          name="current_password"
+                          onChange={handlePasswordChange}
+                          className="form-control form-control-new"
+                        />
                       </div>
                       <div className="col-md-12">
                         <label className="form-label">New Password</label>
-                        <input type="password" name="new_password" onChange={handlePasswordChange} className="form-control form-control-new" />
+                        <input
+                          type="password"
+                          name="new_password"
+                          onChange={handlePasswordChange}
+                          className="form-control form-control-new"
+                        />
                       </div>
                       <div className="col-md-12">
                         <label className="form-label">Confirm Password</label>
-                        <input type="password" name="confirm_password" onChange={handlePasswordChange} className="form-control form-control-new" />
+                        <input
+                          type="password"
+                          name="confirm_password"
+                          onChange={handlePasswordChange}
+                          className="form-control form-control-new"
+                        />
                       </div>
                     </div>
                     <div className="text-center mt-4">
-                      <button type="submit" className="start-btn">Change Password</button>
+                      <button type="submit" className="start-btn">
+                        Change Password
+                      </button>
                     </div>
                   </form>
                 )}
@@ -213,16 +367,28 @@ function SettingsPage() {
                 {activeTab === "delete" && (
                   <div>
                     <h5>⚠️ Delete Your Account</h5>
-                    <p>Some quick example text to build on the card title and make up the bulk of the card's content.  make up the bulk of the card's content. Some quick example text to build on the card title and make up the bulk of the card's content.  make up the bulk of the card's content. Some quick example text to build on the card title and make up the bulk of the card's content.  make up the bulk of the card's content.Some quick example text to build on</p>
+                    <p>
+                      Some quick example text to build on the card title and
+                      make up the bulk of the card's content. make up the bulk
+                      of the card's content. Some quick example text to build on
+                      the card title and make up the bulk of the card's content.
+                      make up the bulk of the card's content. Some quick example
+                      text to build on the card title and make up the bulk of
+                      the card's content. make up the bulk of the card's
+                      content.Some quick example text to build on
+                    </p>
                     <div className="text-center mt-4">
                       <button
                         className="btn btn-danger"
                         onClick={async () => {
-                          if (window.confirm("Аккаунтыңызды өшіргіңіз келетініне сенімдісіз бе? Бұл әрекет қайтымсыз!")) {
+                          if (
+                            window.confirm(
+                              "Аккаунтыңызды өшіргіңіз келетініне сенімдісіз бе? Бұл әрекет қайтымсыз!"
+                            )
+                          ) {
                             try {
                               await api.delete("/users/delete/");
                               alert("✅ Account deleted successfully.");
-                              // optionally redirect to login page or homepage
                               window.location.href = "/login";
                             } catch (err) {
                               alert("❌ Error: could not delete account.");
@@ -236,7 +402,6 @@ function SettingsPage() {
                   </div>
                 )}
               </div>
-
             </div>
           </div>
         </div>

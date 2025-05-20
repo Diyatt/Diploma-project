@@ -233,7 +233,7 @@ function ProductDetailPage() {
                           </div>
 
                           <div className="price mt-4">
-                            ₸{product.price} <small className="text-muted fs-6">/ per day</small>
+                            {product.price}₸<small className="text-muted fs-6">/ per day</small>
                           </div>
                         </div>
                       </div>

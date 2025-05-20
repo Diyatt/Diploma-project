@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import api from "../../utils/api";
 import { useUser } from "../../contexts/UserContext";
 
-function ProductCard({ id, title, price, images, rating, reviews, liked: likedFromProps = false, wishlistId: wishlistIdFromProps = null }) {
+function ProductCard({ id, title, price, images, rating, reviews, is_favorite, liked: likedFromProps = false, wishlistId: wishlistIdFromProps = null }) {
   const [liked, setLiked] = useState(likedFromProps);
   const [wishlistId, setWishlistId] = useState(wishlistIdFromProps);
   const { user } = useUser();
@@ -64,7 +64,7 @@ function ProductCard({ id, title, price, images, rating, reviews, liked: likedFr
           <div className="d-flex align-items-center justify-content-between mt-3">
             <div>
               <h5 className="card-title">{title}</h5>
-              <h6 className="card-subtitle mb-2 text-body-secondary">₸{price}</h6>
+              <h6 className="card-subtitle mb-2 text-body-secondary">{price}₸</h6>
             </div>
 
             <button className="circle-btn" onClick={handleWishlist}>

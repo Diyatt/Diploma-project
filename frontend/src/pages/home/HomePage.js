@@ -98,19 +98,21 @@ function HomePage() {
                     <div className="row ">
                       {products.map((product) => (
                         <ProductCard
-                          key={product.id}
-                          id={product.id}
-                          title={product.name}
-                          price={product.price}
-                          images={
-                            Array.isArray(product.images) && product.images.length > 0
-                              ? product.images.map((img) => img.url)
-                              : [Ecommerce]
-                          }
-                          rating={Math.round(product.average_rating)}
-                          reviews={product.reviewers}
-                        />
-                      ))}
+                        key={product.id}
+                        id={product.id}
+                        title={product.name}
+                        price={product.price}
+                        images={
+                          product.images && product.images.length > 0
+                            ? product.images.map(img => img.url)
+                            : [Ecommerce]
+                        }
+                        rating={Math.round(product.average_rating)}
+                        reviews={product.reviewers}
+                        liked={product.is_favorite} // ✅ қосылды
+                        wishlistId={product.wishlist_id || null} // ⚠️ егер `wishlist_id` API-де болса
+                      />                    
+                    ))}
                     </div>
                   )}
                 </div>
