@@ -143,6 +143,8 @@ class PasswordResetRequestView(APIView):
             return Response({"error": "User not found"}, status=404)
 
         token = default_token_generator.make_token(user)
+        user.verification_code = token
+        user.save()
 
         # Используем BACKEND_URL вместо FRONTEND_URL
         reset_link = f"{settings.BACKEND_URL}/api/auth/password-reset-confirm/{token}/"
@@ -157,30 +159,33 @@ class PasswordResetRequestView(APIView):
 
         return Response({"message": "Reset link sent!"})
 
-
 class PasswordResetConfirmView(APIView):
     """
-    Подтверждение сброса пароля: обновляет пароль пользователя.
+    Подтверждение сброса пароля: пользователь вводит новый пароль и подтверждение.
     """
-
     def post(self, request, token):
-        email = request.data.get("email")
-        new_password = request.data.get("password")
+        password = request.data.get("password")
+        confirm_password = request.data.get("confirm_password")
 
-        if not email or not new_password:
-            return Response({"error": "Email and password are required"}, status=400)
+        if not password or not confirm_password:
+            return Response({"error": "Both password fields are required."}, status=400)
 
-        user = User.objects.filter(email=email).first()
+        if password != confirm_password:
+            return Response({"error": "Passwords do not match."}, status=400)
+
+        user = User.objects.filter(verification_code=token).first()
         if not user:
-            return Response({"error": "User not found"}, status=404)
+            return Response({"error": "Invalid or expired token."}, status=400)
 
         if not default_token_generator.check_token(user, token):
-            return Response({"error": "Invalid or expired token"}, status=400)
+            return Response({"error": "Invalid or expired token."}, status=400)
 
-        user.set_password(new_password)
+        user.set_password(password)
+        user.verification_code = ""  # очищаем токен
         user.save()
 
-        return Response({"message": "Password reset successful!"})
+        return Response({"message": "Password has been reset successfully."})
+
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]

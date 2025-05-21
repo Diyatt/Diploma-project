@@ -154,6 +154,7 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT'),
         'OPTIONS': {
             'options': '-c client_encoding=UTF8',
+            'sslmode': 'require'
         },
     }
 }
@@ -216,7 +217,7 @@ SIMPLE_JWT = {
 AUTH_USER_MODEL = 'users.User'
 #AUTHENTICATION_BACKENDS = ['users.backends.EmailAuthBackend']
 
-BACKEND_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:8000")
+BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:3000")
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
