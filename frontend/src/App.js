@@ -15,6 +15,7 @@ import NotificationsPage from "./pages/notifications/NotificationsPage";
 import ProductDetailPage from "./pages/product/ProductDetailPage";
 import RegisterPage from "./pages/login/RegisterPage";
 import EmailVerificationPage from "./pages/login/EmailVerificationPage";
+import ForgetPassword from "./pages/login/ForgetPassword";
 import CategoryProductsPage from "./pages/product/CategoryProductsPage";
 import ProfillePage from "./pages/profille/ProfillePage";
 
@@ -43,6 +44,7 @@ function App() {
           <Route path="/product/:id" element={<ProductDetailPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/verify-email" element={<EmailVerificationPage />} />
+          <Route path="/forget-password" element={<ForgetPassword />} />
           <Route path="/category/:id" element={<CategoryProductsPage />} />
 
         </Routes>

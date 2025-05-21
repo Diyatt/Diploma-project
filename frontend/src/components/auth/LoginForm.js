@@ -74,7 +74,7 @@ const LoginForm = () => {
           />
         </div>
         <div className="mb-3">
-          <a href="#" className="form-check-label">Forget your password?</a>
+          <Link to="/forget-password" className="form-check-label">Forget your password?</Link> 
         </div>
 
         {error && <div className="alert alert-danger">{error}</div>}
