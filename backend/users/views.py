@@ -147,7 +147,7 @@ class PasswordResetRequestView(APIView):
         user.save()
 
         # Используем BACKEND_URL вместо FRONTEND_URL
-        reset_link = f"{settings.BACKEND_URL}/api/auth/password-reset-confirm/{token}/"
+        reset_link = f"{settings.BACKEND_URL}/password-reset-confirm/{token}/"
 
         send_mail(
             "Reset Password Request",
