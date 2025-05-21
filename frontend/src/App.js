@@ -18,6 +18,7 @@ import EmailVerificationPage from "./pages/login/EmailVerificationPage";
 import ForgetPassword from "./pages/login/ForgetPassword";
 import CategoryProductsPage from "./pages/product/CategoryProductsPage";
 import ProfillePage from "./pages/profille/ProfillePage";
+import ResetPasswordPage from "./pages/login/ResetPassword"
 
 function PrivateRoute({ children }) {
   const { user } = useUser();
@@ -46,7 +47,7 @@ function App() {
           <Route path="/verify-email" element={<EmailVerificationPage />} />
           <Route path="/forget-password" element={<ForgetPassword />} />
           <Route path="/category/:id" element={<CategoryProductsPage />} />
-
+          <Route path="/password-reset-confirm/:token" element={<ResetPasswordPage />} />
         </Routes>
       </UserProvider>
     </Router>
