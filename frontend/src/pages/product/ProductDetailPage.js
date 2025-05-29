@@ -9,7 +9,6 @@ import Sidebar from "../../components/Sidebar/Sidebar";
 import Header from "../../components/Header/Header";
 import Pereolder from "../../assets/img/Animation.gif";
 
-
 function ProductDetailPage() {
   const navigate = useNavigate();
   const [reviews, setReviews] = useState([]);
@@ -21,11 +20,69 @@ function ProductDetailPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [userDetails, setUserDetails] = useState({});
   const [loading, setLoading] = useState(true);
+  const [liked, setLiked] = useState(false);
+  const [wishlistId, setWishlistId] = useState(null);
   const userData = JSON.parse(localStorage.getItem("userData"));
   const profilePicture = userData?.profile_picture || "https://via.placeholder.com/60";
   const fullName = userData?.full_name || userData?.username || "Сіз";
   const [isOpeningChat, setIsOpeningChat] = useState(false);
   const [showPhone, setShowPhone] = useState(false);
+
+  const handleWishlist = async () => {
+    try {
+      if (!userData || !userData.id) {
+        alert("Сіз жүйеге кірмегенсіз!");
+        return;
+      }
+
+      if (!liked) {
+        // Add to wishlist
+        const response = await api.post("/wishlist/", { 
+          product: parseInt(id)
+        });
+        
+        if (response.data) {
+          setLiked(true);
+          setWishlistId(response.data.id);
+          // Update product data to reflect the change
+          setProduct(prev => ({
+            ...prev,
+            is_favorite: true,
+            wishlist_id: response.data.id
+          }));
+          alert("Өнім таңдаулыларға қосылды!");
+        }
+      } else {
+        // Remove from wishlist
+        const wishlistIdToDelete = wishlistId || product?.wishlist_id;
+        
+        if (!wishlistIdToDelete) {
+          alert("Өнім ID табылмады.");
+          return;
+        }
+
+        await api.delete(`/wishlist/${wishlistIdToDelete}/`);
+        setLiked(false);
+        setWishlistId(null);
+        // Update product data to reflect the change
+        setProduct(prev => ({
+          ...prev,
+          is_favorite: false,
+          wishlist_id: null
+        }));
+        alert("Өнім таңдаулылардан өшірілді!");
+      }
+    } catch (error) {
+      console.error("Тізім өңдеу қатесі:", error);
+      if (error.response?.status === 401) {
+        alert("Сіз жүйеге кірмегенсіз!");
+      } else if (error.response?.status === 400) {
+        alert("Өнім қазірдің өзінде таңдаулылар тізімінде бар.");
+      } else {
+        alert("Қате орын алды. Қайта көріңіз.");
+      }
+    }
+  };
 
   const handleSubmitReview = async () => {
     if (isSubmitting) return;
@@ -100,19 +157,25 @@ function ProductDetailPage() {
   };
 
   useEffect(() => {
-    api.get(`/products/${id}/`)
-      .then((res) => {
-        console.log("🔍 Product data:", res.data); // ✅ API-дан не келіп жатқанын тексеру
-        setProduct(res.data);
-      })
-      .catch((err) => console.error("Қате:", err));
+    const fetchData = async () => {
+      try {
+        // Fetch product data
+        const productResponse = await api.get(`/products/${id}/`);
+        const productData = productResponse.data;
+        setProduct(productData);
+        
+        // Set initial wishlist state from product data
+        setLiked(productData.is_favorite || false);
+        setWishlistId(productData.wishlist_id || null);
 
-    api.get(`/products/${id}/reviews/`)
-      .then(async (res) => {
-        setReviews(res.data);
+        // Fetch reviews
+        const reviewsResponse = await api.get(`/products/${id}/reviews/`);
+        setReviews(reviewsResponse.data);
+
+        // Fetch user details for reviews
         const userMap = {};
         await Promise.all(
-          res.data.map(async (review) => {
+          reviewsResponse.data.map(async (review) => {
             if (!userMap[review.user]) {
               try {
                 const userRes = await api.get(`/users/${review.user}/`);
@@ -124,9 +187,14 @@ function ProductDetailPage() {
           })
         );
         setUserDetails(userMap);
-      })
-      .catch((err) => console.error("Пікір қатесі:", err))
-      .finally(() => setLoading(false));
+      } catch (error) {
+        console.error("Data fetching error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, [id]);
 
   if (loading || !product) {
@@ -216,7 +284,33 @@ function ProductDetailPage() {
                                   <span className="text-muted small">({product.reviewers})</span>
                                 </div>
                               </div>
-                              <button className="btn btn-outline-danger btn-sm rounded-circle">♥</button>
+                              <button 
+                                className="circle-btn" 
+                                onClick={handleWishlist}
+                                style={{ 
+                                  border: 'none', 
+                                  background: 'none',
+                                  cursor: 'pointer',
+                                  padding: '5px'
+                                }}
+                              >
+                                <svg 
+                                  width="20" 
+                                  height="20" 
+                                  viewBox="0 0 20 17" 
+                                  fill="none" 
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    clipRule="evenodd"
+                                    d="M10 15.883L17.191 8.383C18.4872 7.08786 18.8084 5.10828 17.9883 3.46975C17.3766 2.24665 16.2142 1.39215 14.8643 1.17313C13.5144 0.954121 12.1416 1.3973 11.1745 2.36425L10 3.538L8.82552 2.36425C7.85848 1.3973 6.4856 0.954121 5.13572 1.17313C3.78583 1.39215 2.6235 2.24665 2.01177 3.46975C1.1928 5.10758 1.51363 7.08571 2.80827 8.38075L10 15.883Z"
+                                    stroke="black"
+                                    strokeWidth="1.5"
+                                    fill={liked ? "red" : "none"}
+                                  />
+                                </svg>
+                              </button>
                             </div>
 
                             <p className="mt-3 desc-text p-card">
@@ -228,7 +322,7 @@ function ProductDetailPage() {
                               <div className="col-6"><strong>Category:</strong> {product.category_name || "N/A"}</div>
                               <div className="col-6"><strong>Quality:</strong> <span className="tag">{product.quality_type}</span></div>
                               <div className="col-6 mt-2"><strong>District:</strong> {product.district_name || product.district}</div>
-                              <div className="col-6 mt-2"><strong>Piece:</strong> <span className="tag">{product.piece} </span></div>
+                              <div className="col-6 mt-2"><strong>Quantity:</strong> <span className="tag">{product.piece} </span></div>
                             </div>
                           </div>
 
