@@ -97,7 +97,11 @@ function MyChatPages() {
                                 <div className="d-flex justify-content-between align-items-center">
                                   <h6 className="mb-0 fw-bold">{otherUser.full_name || otherUser.username}</h6>
                                   <small className="text-muted">
-                                    {new Date(chat.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    {new Date(chat.updated_at).toLocaleTimeString('en-GB', { 
+                                      hour: '2-digit', 
+                                      minute: '2-digit',
+                                      hour12: false 
+                                    })}
                                   </small>
                                 </div>
                                 <p className="text-muted mb-0 small">
