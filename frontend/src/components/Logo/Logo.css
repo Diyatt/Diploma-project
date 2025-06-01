@@ -1,0 +1,7 @@
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .logo {
+    width: 60px;
+    height: 16px;
+  }
+} 

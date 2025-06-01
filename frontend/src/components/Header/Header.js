@@ -1,13 +1,12 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import UserImage from "../../assets/img/defaultProfile.png";
-import UsImage from "../../assets/img/us.jpg";
-import { NavLink ,useNavigate } from 'react-router-dom';
-import { useUser } from "../../contexts/UserContext"; 
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useUser } from "../../contexts/UserContext";
+import Logo from "../Logo/Logo";
 
 const Header = ({ toggleSidebar }) => {
   const navigate = useNavigate();
-  const { user } = useUser(); // 👈 қолданушының барлық мәліметі осы жерде
+  const { user } = useUser();
 
   const username = user?.username || "Guest";
   const email = user?.email || "";
@@ -15,15 +14,14 @@ const Header = ({ toggleSidebar }) => {
   const { logout } = useUser();
 
   const handleLogout = () => {
-    logout();           // 🔐 Жүйеден шығу
-    navigate("/");      // ⬅ Басты бетке бағыттау (қаласаң /login немесе /landing деп өзгерте аласың)
+    logout();
+    navigate("/");
   };
   
   return (
     <div className="header">
       <div className="topbar container-fluid">
           <div className="d-flex align-items-center gap-lg-2 gap-1">
-
               <button onClick={toggleSidebar} className="sidebar-toggle">
                   <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <g opacity="0.898019">
@@ -32,18 +30,13 @@ const Header = ({ toggleSidebar }) => {
                   </svg>
               </button>
 
-             
-
+            
           </div>
 
           <ul className="topbar-menu d-flex align-items-center gap-3">
               <li className="dropdown">
-                 
-              </li>
-              <li className="dropdown">
                   <a className="nav-link dropdown-toggle arrow-none nav-user px-2" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                       <span className="account-user-avatar">
-                      
                         <img
                           src={profilePicture || UserImage}
                           alt="user-image"
@@ -51,7 +44,7 @@ const Header = ({ toggleSidebar }) => {
                           height="32"
                           className="rounded-circle"
                           onError={(e) => {
-                            e.target.onerror = null; // Шексіз цикл болмас үшін
+                            e.target.onerror = null;
                             e.target.src = UserImage;
                           }}
                         />
@@ -62,7 +55,7 @@ const Header = ({ toggleSidebar }) => {
                       </span>
                   </a>
                   <div className="dropdown-menu dropdown-menu-end dropdown-menu-animated profile-dropdown">
-                      <div className=" dropdown-header noti-title">
+                      <div className="dropdown-header noti-title">
                           <h6 className="text-overflow m-0">Welcome !</h6>
                       </div>
                       <Link to="/myprofille" className="dropdown-item">
@@ -77,8 +70,7 @@ const Header = ({ toggleSidebar }) => {
               </li>
           </ul>    
       </div>
-     
-  </div>
+    </div>
   );
 };
 

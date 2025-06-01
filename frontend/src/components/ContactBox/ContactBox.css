@@ -1,0 +1,125 @@
+.contact-box {
+  background: white;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.contact-box:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.contact-title {
+  color: #2c3e50;
+  font-size: 1.5rem;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.contact-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 3px;
+  background: #3498db;
+  border-radius: 2px;
+}
+
+.contact-content {
+  width: 100%;
+  max-width: 400px;
+}
+
+.contact-btn {
+  padding: 12px 20px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.message-btn {
+  background: #3498db;
+  color: white;
+  border: none;
+}
+
+.message-btn:hover {
+  background: #2980b9;
+  transform: translateY(-2px);
+}
+
+.message-btn:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.phone-btn {
+  border: 2px solid #3498db;
+  color: #3498db;
+}
+
+.phone-btn:hover {
+  background: #3498db;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.copy-btn {
+  background: #f8f9fa;
+  color: #2c3e50;
+  border: 1px solid #dee2e6;
+}
+
+.copy-btn:hover {
+  background: #e9ecef;
+  transform: translateY(-2px);
+}
+
+.copy-btn.copied {
+  background: #2ecc71;
+  color: white;
+  border-color: #2ecc71;
+}
+
+.phone-section {
+  animation: fadeIn 0.3s ease;
+}
+
+.no-owner-message {
+  padding: 20px;
+  color: #7f8c8d;
+  font-style: italic;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .contact-box {
+    padding: 20px !important;
+  }
+  
+  .contact-title {
+    font-size: 1.3rem;
+  }
+  
+  .contact-btn {
+    padding: 10px 15px;
+  }
+} 
