@@ -7,8 +7,6 @@ from django.db.models import Q
 from .models import Chat, Message
 from .serializers import ChatSerializer, MessageSerializer
 
-
-
 class MessageListCreateView(generics.ListCreateAPIView):
     serializer_class = MessageSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -52,10 +50,6 @@ class MessageListCreateView(generics.ListCreateAPIView):
             
         except Chat.DoesNotExist:
             raise ValidationError("Chat does not exist.")
-
-
-
-
 
 class ChatListCreateView(generics.ListCreateAPIView):
     serializer_class = ChatSerializer

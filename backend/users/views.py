@@ -1,5 +1,4 @@
 from rest_framework.views import APIView
-from rest_framework import generics
 from users.models import User
 from users.serializers import UserSerializer, ChangePasswordSerializer, RegisterSerializer
 from rest_framework.response import Response
@@ -15,8 +14,9 @@ from .serializers import UserUpdateSerializer
 from django.contrib.auth import get_user_model
 import random
 from django.core.mail import send_mail
-import string
 from rest_framework import serializers
+from django.utils import timezone
+from datetime import timedelta
 
 
 class RegisterView(generics.CreateAPIView):
@@ -61,6 +61,12 @@ class VerifyEmailCodeView(APIView):
         if not email or not code:
             return Response({"error": "Email и код обязательны"}, status=status.HTTP_400_BAD_REQUEST)
 
+        now = timezone.now()
+
+        # ✅ Удаляем всех неподтверждённых пользователей старше 10 минут
+        expired_time = now - timedelta(minutes=10)
+        User.objects.filter(is_active=False, created_at__lt=expired_time).delete()
+
         # try:
         #     user = User.objects.get(email=email)
         # except User.DoesNotExist:
@@ -74,9 +80,14 @@ class VerifyEmailCodeView(APIView):
         if user.verification_code != code:
             return Response({"error": "Invalid verification code"}, status=status.HTTP_400_BAD_REQUEST)
 
+        if now > user.created_at + timedelta(minutes=10):
+            user.delete()
+            return Response({"error": "Verification code expired. Account has been removed."}, status=400)
+
         user.is_active = True
         user.verification_code = None
         user.save()
+
         return Response({"message": "Email verified successfully!"}, status=status.HTTP_200_OK)
 
 class ResendVerificationCodeView(APIView):
@@ -94,6 +105,7 @@ class ResendVerificationCodeView(APIView):
         # Генерируем новый код
         verification_code = f"{random.randint(100000, 999999)}"
         user.verification_code = verification_code
+        user.created_at = timezone.now()  # обновляем время генерации
         user.save()
 
         # Отправляем письмо

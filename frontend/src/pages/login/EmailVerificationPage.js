@@ -46,11 +46,27 @@ function VerifyEmailPage() {
       login(verifiedUser); // ✅ Барлық дерек (id, username, email, token...) сақталады
       navigate("/home");
     } catch (err) {
-      setError("Код дұрыс емес немесе жарамсыз.");
+      setError("Code is incorrect or expired!");
+      setCodeDigits(["", "", "", "", "", ""]);
     } finally {
       setLoading(false);
     }
   };
+
+  const handleResend = async () => {
+  setError(null);
+  setLoading(true);
+
+  try {
+    await api.post("/auth/resend-verification/", { email });
+    setCodeDigits(["", "", "", "", "", ""]);
+    alert("Код повторно отправлен на почту!");
+  } catch (err) {
+    setError("Не удалось повторно отправить код.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="account-pages pt-2 pt-sm-5 pb-4 pb-sm-5 position-relative">
@@ -96,10 +112,17 @@ function VerifyEmailPage() {
                       {loading ? "Checking..." : "Submit"}
                     </button>
                   </form>
-
-                  <p className="mt-3">
-                    Didn’t get a code? <a href="#">Resend</a>
-                  </p>
+                <p className="mt-3">
+                    Didn’t get a code?{" "}
+                    <button
+                      type="button"
+                      className="btn btn-link p-0"
+                      onClick={handleResend}
+                      disabled={loading}
+                    >
+                      Resend
+                    </button>
+                </p>
                 </div>
               </div>
             </div>
