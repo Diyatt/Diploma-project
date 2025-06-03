@@ -19,7 +19,11 @@ import cloudinary.uploader
 import cloudinary.api
 from datetime import timedelta
 from django.core.asgi import get_asgi_application
+from django.utils import timezone
+from datetime import datetime
 
+print("🕓 Django (timezone.now()):", timezone.now())
+print("🕘 System time (naive datetime):", datetime.now())
 
 load_dotenv()
 
@@ -184,11 +188,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+USE_TZ = True
+TIME_ZONE = 'Asia/Almaty'  # или ваш реальный часовой пояс
 
 USE_I18N = True
 
-USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)

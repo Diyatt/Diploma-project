@@ -6,8 +6,6 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Chat, Message
 from .serializers import ChatSerializer, MessageSerializer
 
-
-
 class MessageListCreateView(generics.ListCreateAPIView):
     serializer_class = MessageSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -47,10 +45,6 @@ class MessageListCreateView(generics.ListCreateAPIView):
         except Chat.DoesNotExist:
             raise ValidationError("Chat does not exist.")
 
-
-
-
-
 class ChatListCreateView(generics.ListCreateAPIView):
     serializer_class = ChatSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -58,8 +52,6 @@ class ChatListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         user = self.request.user
         return Chat.objects.filter(user1=user) | Chat.objects.filter(user2=user)
-
-
 
     def perform_create(self, serializer):
         user1 = self.request.user
