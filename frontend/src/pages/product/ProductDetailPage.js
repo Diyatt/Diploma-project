@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Header from "../../components/Header/Header";
 import Pereolder from "../../assets/img/Animation.gif";
+import ContactBox from "../../components/ContactBox/ContactBox";
 
 function ProductDetailPage() {
   const navigate = useNavigate();
@@ -27,6 +28,8 @@ function ProductDetailPage() {
   const fullName = userData?.full_name || userData?.username || "Сіз";
   const [isOpeningChat, setIsOpeningChat] = useState(false);
   const [showPhone, setShowPhone] = useState(false);
+
+  
 
   const handleWishlist = async () => {
     try {
@@ -355,37 +358,7 @@ function ProductDetailPage() {
 
                       {/* 📞 Contacts */}
                       <div className="col-md-6 d-flex">
-                        <div className="contact-box text-center flex-fill d-flex flex-column  align-items-center p-3  rounded shadow-sm w-100">
-                          <h4 className="fw-bold mb-4">Contacts</h4>
-                          {product?.owner && (
-                            <>
-                              <button
-                                className="btn btn-blue mb-3 w-50"
-                                onClick={async () => {
-                                  setIsOpeningChat(true);
-                                  try {
-                                    const ownerId = typeof product.owner === "object" ? product.owner.id : product.owner;
-                                    await handleStartChat(ownerId);
-                                  } finally {
-                                    setIsOpeningChat(false);
-                                  }
-                                }}
-                              >
-                                {isOpeningChat ? "Opening..." : "Message"}
-                              </button>
-
-                              <button
-                                className="btn btn-blue w-50"
-                                onClick={() => setShowPhone(true)}
-                              >
-                                {showPhone
-                                  ? product.owner_phone || "Phone number unavailable"
-                                  : "Call"}
-                              </button>
-                            </>
-                          )}
-
-                        </div>
+                        <ContactBox product={product} handleStartChat={handleStartChat} />
                       </div>
                     </div>
                   </div>

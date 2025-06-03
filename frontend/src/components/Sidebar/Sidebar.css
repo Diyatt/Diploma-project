@@ -1,0 +1,209 @@
+.sidebar {
+  width: 250px;
+  min-width: 250px;
+  background-color: #f4f7f6; /* Light background */
+  color: #333;
+  transition: all 0.3s ease; /* Smooth transition for collapse */
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow-y: auto;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.sidebar.collapsed {
+  width: 80px;
+  min-width: 80px;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: center; /* Centers content horizontally */
+  align-items: center; /* Centers content vertically */
+  padding: 20px; /* Add some padding */
+  border-bottom: 1px solid #eee; /* Example border */
+  margin-bottom: 10px;
+  text-align: center; /* Add text-align as a fallback */
+}
+
+.sidebar.collapsed .sidebar-logo .logo {
+    width: 40px; /* Adjust smaller size when collapsed */
+}
+
+.sidebar-nav {
+  list-style: none;
+  padding: 0 10px;
+}
+
+.sidebar-nav .nav-link {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px; /* Increased padding */
+  color: #333; /* Darker text color */
+  text-decoration: none;
+  border-radius: 8px; /* Rounded corners */
+  margin-bottom: 8px; /* Space between links */
+  transition: all 0.3s ease; /* Smooth hover effects */
+  font-size: 1rem; /* Standard font size */
+}
+
+.sidebar-nav .nav-link:hover {
+  background-color: #e9ecef; /* Light hover background */
+  color: #007bff; /* Highlight text on hover */
+  transform: translateX(5px); /* Slight movement on hover */
+}
+
+.sidebar-nav .nav-link.active {
+  background-color: #007bff; /* Primary color for active */
+  color: white; /* White text for active */
+  font-weight: bold;
+  /* Ensure no transform or positioning changes on active */
+  transform: none !important; /* Prevent any transformation */
+  padding: 12px 20px; /* Set padding to match default state */
+  position: static;
+  left: initial;
+  top: initial;
+}
+
+.sidebar-nav .nav-link.active .nav-icon {
+    color: white; /* White icon for active */
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.nav-icon {
+  margin-right: 15px; /* Space between icon and text */
+  font-size: 1.2rem; /* Icon size */
+  transition: margin 0.3s ease; /* Smooth transition for icon margin */
+  color: #555; /* Default icon color */
+}
+
+.sidebar.collapsed .nav-icon {
+  margin-right: 0; /* Remove margin when collapsed */
+  font-size: 1.5rem; /* Slightly larger icon when collapsed */
+}
+
+.sidebar.collapsed .nav-link span {
+  display: none; /* Hide text when collapsed */
+}
+
+.sidebar.collapsed .nav-link {
+  justify-content: center; /* Center icons horizontally */
+  padding: 12px 0; /* Set horizontal padding to 0 when collapsed for centering */
+}
+
+.sidebar.collapsed .nav-link.active {
+  justify-content: center; /* Ensure centered when active and collapsed */
+  transform: none !important; /* Prevent any transformation */
+  padding: 12px 0; /* Ensure consistent padding in collapsed active state */
+  position: static;
+  left: initial;
+  top: initial;
+}
+
+.sidebar.collapsed .nav-link.active .nav-icon {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.sidebar-nav .logout-link {
+  margin-top: 20px; /* Space above logout */
+  border-top: 1px solid #ddd; /* Separator line */
+  padding-top: 15px;
+  color: #dc3545; /* Danger color for logout */
+}
+
+.sidebar-nav .logout-link:hover {
+    background-color: #f8d7da; /* Light red hover */
+    color: #dc3545; /* Keep text color */
+}
+
+/* Adjust content area when sidebar is open */
+.content {
+  margin-left: 250px; /* Push content when sidebar is open */
+  transition: margin 0.3s ease;
+}
+
+.content.collapsed {
+  margin-left: 80px; /* Push content less when sidebar is collapsed */
+}
+
+/* Basic responsive adjustments */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 200px;
+    min-width: 200px;
+    transform: translateX(-100%); /* Hide off-screen by default */
+    box-shadow: 5px 0 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .sidebar.collapsed {
+    transform: translateX(0); /* Slide in when toggled */
+    width: 200px; /* Full width sidebar on mobile when open */
+    min-width: 200px;
+  }
+
+  .content {
+    margin-left: 0; /* No margin on mobile */
+  }
+
+  .content.collapsed {
+     margin-left: 0; /* Still no margin on mobile */
+  }
+
+  .sidebar-header {
+      justify-content: center; /* Keep centered on mobile */
+  }
+
+  .sidebar.collapsed .nav-link span {
+    display: inline; /* Show text on mobile when collapsed (sidebar is full width) */
+  }
+   .sidebar.collapsed .nav-icon {
+    margin-right: 15px; /* Restore margin on mobile */
+    font-size: 1.2rem; /* Restore icon size on mobile */
+  }
+}
+
+/* Add styles for the Logo component itself if needed */
+.logo {
+  display: block; /* SVGs can sometimes be inline, make it block for centering */
+  max-width: 100%; /* Ensure logo doesn't overflow */
+  height: auto; /* Maintain aspect ratio */
+}
+
+/* Add styles for the navigation links if needed */
+.nav-link {
+  /* ... existing nav-link styles */
+}
+
+/* Add styles for collapsed state if needed */
+.sidebar.collapsed .sidebar-header {
+  /* Adjust styles for collapsed state if necessary */
+}
+
+.sidebar.collapsed .logo-link {
+  /* Adjust styles for collapsed state if necessary */
+}
+
+.sidebar.collapsed .logo {
+   /* Adjust styles for collapsed state if necessary */
+}
+
+/* Add styles for the content area if needed */
+.content {
+  /* Adjust margin based on sidebar width */
+}
+
+.logo-link {
+  /* Your existing logo-link styles */
+  /* Ensure this div doesn't prevent centering, e.g., no fixed width unless intended */
+  width: auto; /* Allow the link to size based on content */
+}
+
+.sidebar-logo-link {
+  display: block; /* Treat as a block element */
+  margin: 0 auto; /* Center the block element */
+  /* Add any other desired styles for the logo link */
+}

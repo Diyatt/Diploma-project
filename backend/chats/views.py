@@ -2,6 +2,7 @@ from rest_framework import generics, permissions
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
+from django.db.models import Q
 
 from .models import Chat, Message
 from .serializers import ChatSerializer, MessageSerializer
@@ -36,12 +37,17 @@ class MessageListCreateView(generics.ListCreateAPIView):
             if not content and not image:
                 raise ValidationError("Either content or image is required.")
                 
-            serializer.save(
+            # Save the message
+            message = serializer.save(
                 sender=self.request.user, 
                 chat=chat, 
                 content=content,
                 image=image
             )
+            
+            # Update the chat's updated_at field
+            chat.save()  # This will update the updated_at field due to auto_now=True
+            
         except Chat.DoesNotExist:
             raise ValidationError("Chat does not exist.")
 
@@ -51,7 +57,9 @@ class ChatListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return Chat.objects.filter(user1=user) | Chat.objects.filter(user2=user)
+        return Chat.objects.filter(
+            Q(user1=user) | Q(user2=user)
+        ).order_by('-updated_at')  # Order by most recent first
 
     def perform_create(self, serializer):
         user1 = self.request.user

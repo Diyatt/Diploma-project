@@ -1,9 +1,7 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react";
-import LogoImage from "../../assets/img/Logo.png";
 import { useUser } from "../../contexts/UserContext";
-import { NavLink ,useNavigate } from 'react-router-dom';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
+import Logo from "../Logo/Logo";
+
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const navigate = useNavigate();
@@ -11,7 +9,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     // Логин логикасын қосуға болады
     navigate("/"); // Басты бетке бағыттау
   };
-  const { logout } = useUser();
+  const { logout } = useUser(); 
 
   const handleLogout = () => {
     logout();           // 🔐 Жүйеден шығу
@@ -22,8 +20,10 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     <div className={`sidebar ${
         isOpen ? "collapsed" : "-translate-x-full"
       }`}>
-      <div className="logo">
-          <img src={LogoImage} alt="" />
+      <div className="sidebar-header">
+        <Link to="/home" className="sidebar-logo-link">
+                  <Logo width={isOpen ? "50" : "170"} height={isOpen ? "30" : "30"} />
+        </Link>
       </div>
 
 

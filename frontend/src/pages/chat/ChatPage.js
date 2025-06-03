@@ -125,7 +125,11 @@ function ChatPage() {
                                 </div>
                               )}
                               <div className="text-muted small mt-1 text-end" style={{ fontSize: "0.75rem" }}>
-                                {new Date(msg.sent_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                {new Date(msg.sent_at).toLocaleTimeString('en-GB', { 
+                                  hour: '2-digit', 
+                                  minute: '2-digit',
+                                  hour12: false 
+                                })}
                                 {isOwn && <span className="ms-2">{msg.is_read ? "✓✓" : "✓"}</span>}
                               </div>
                             </div>

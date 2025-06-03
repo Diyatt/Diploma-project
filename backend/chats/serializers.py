@@ -19,8 +19,6 @@ class ChatSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'updated_at', 'user1']
 
 
-
-
 class MessageSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
     sender = UserSerializer(read_only=True)

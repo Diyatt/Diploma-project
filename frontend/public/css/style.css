@@ -173,7 +173,6 @@ body {
 .collapsed .nav .active {
     background: none; /* Фонды алып тастау */
     color: inherit; /* Текст түстерін стандартқа қайтару */
-    padding: 0; /* Қосымша кеңістікті алып тастау */
 }
 
 .collapsed .nav .active::before {
@@ -185,7 +184,7 @@ body {
 }
 .collapsed .nav .active{
     /* transition: opacity 0.0003s; */
-    margin-left: 35%;
+    /* margin-left: 35%; Removed to prevent shifting */
 }
 .nav-link svg{
     opacity: 0;
