@@ -52,8 +52,8 @@ function SettingsPage() {
         );
         setDistricts(filteredDistricts);
   
-        // 💡 Extract just "Turksib" from "Turksib District"
-        const cleanDistrictName = data.district.split(" ")[0];
+        // 💡 Extract just "Turksib District" from "Turksib District (Almaty)"
+        const cleanDistrictName = data.district.split(" (")[0];
   
         const districtObj = filteredDistricts.find(
           (d) => d.name === cleanDistrictName
