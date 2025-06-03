@@ -4,7 +4,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 
 # ⬇️ Скопируй переменные окружения внутрь контейнера
-COPY .env .env
+COPY .env.production .env
 
 RUN npm install
 COPY . .

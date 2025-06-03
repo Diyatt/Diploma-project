@@ -44,20 +44,24 @@ function SettingsPage() {
         const userRes = await api.get("/users/me/");
         const data = userRes.data;
   
+        console.log("User data district:", data.district);
         const regionObj = regionsData.find((r) => r.name === data.region);
         const regionId = regionObj ? regionObj.id : "";
   
         const filteredDistricts = districtsData.filter(
           (d) => d.region.id === regionId
         );
+        console.log("Filtered districts:", filteredDistricts);
         setDistricts(filteredDistricts);
   
-        // 💡 Extract just "Turksib District" from "Turksib District (Almaty)"
-        const cleanDistrictName = data.district.split(" (")[0];
+        // 💡 Extract just the district name part before the region in parentheses
+        const cleanDistrictName = data.district.split(' (')[0];
   
         const districtObj = filteredDistricts.find(
           (d) => d.name === cleanDistrictName
         );
+        console.log("Found district object:", districtObj);
+  
         const districtId = districtObj ? districtObj.id : "";
   
         setProfileData({
