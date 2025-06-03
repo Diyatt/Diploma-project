@@ -1,20 +1,33 @@
-# Используем официальный образ Python
-FROM python:3.9-slim
+# Используем официальный Python-образ
+FROM python:3.11-slim
 
-# Устанавливаем рабочую директорию в контейнере
+# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Копируем файл requirements.txt в контейнер
+# Обновляем пакеты и устанавливаем системные зависимости
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    gcc \
+    netcat-openbsd \
+    curl \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
+
+# Копируем только файл зависимостей сначала (для кэширования pip install)
 COPY requirements.txt .
 
-# Устанавливаем зависимости
-RUN pip install --no-cache-dir -r requirements.txt
+# Устанавливаем Python-зависимости
+RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
-# Копируем весь проект в контейнер
+# Копируем остальной проект
 COPY . .
 
-# Устанавливаем Daphne
-RUN pip install daphne
+# Даем права на выполнение entrypoint.sh
+RUN chmod +x ./entrypoint.sh
 
-# Указываем команду для запуска с Daphne
-CMD ["daphne", "config.asgi:application", "--bind", "0.0.0.0", "--port", "8000"]
+# Указываем, что контейнер будет использовать порт 8000
+EXPOSE 8000
+
+# Команда запуска
+CMD ["./entrypoint.sh"]

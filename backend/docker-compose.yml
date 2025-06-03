@@ -1,27 +1,9 @@
-version: '3.8'
-
 services:
-  python-app:
+  web:
     build: .
-    volumes:
-      - .:/app
+    image: alikhancyber/arent:1.0.0
+    command: ["bash", "./entrypoint.sh"]
     ports:
       - "8000:8000"
-    environment:
-      - DEBUG=True
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_HOST=${DB_HOST}  # Использование переменной окружения для хоста базы данных
-      - DB_PORT=${DB_PORT}  # Порт базы данных
-      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
-      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
-      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
-    networks:
-      - my_network
-
-networks:
-  my_network:
-
-volumes:
-  postgres_data:
+    env_file:
+      - .env
