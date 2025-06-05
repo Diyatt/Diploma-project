@@ -20,10 +20,12 @@ from django.utils import timezone
 from datetime import datetime
 
 
-print("🕓 Django (timezone.now()):", timezone.now())
-print("🕘 System time (naive datetime):", datetime.now())
+# print("🕓 Django (timezone.now()):", timezone.now())
+# print("🕘 System time (naive datetime):", datetime.now())
 
 load_dotenv()
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 cloudinary.config( 
     cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME"), 
@@ -77,6 +79,7 @@ INSTALLED_APPS = [
     'products',
     'chats',
     'home',
+    'chat_bot',
     'channels',
     'corsheaders',
 ]
