@@ -9,6 +9,8 @@ import TitleFilter from '../../components/TitleFilter/TitleFilter';
 import ProductImage from "../../assets/img/product1.png";
 import Pereolder from "../../assets/img/Animation.gif";
 import './LendPage.css'; // We'll create this file next
+import { Tooltip } from 'bootstrap';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 function LendPage() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -28,6 +30,14 @@ function LendPage() {
         .finally(() => {
           setLoadingLendPage(false);
         });
+    }, []);
+
+    useEffect(() => {
+      // Initialize tooltips
+      const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new Tooltip(tooltipTriggerEl);
+      });
     }, []);
 
     const AddLend = () => {
@@ -127,19 +137,23 @@ function LendPage() {
                                 <div className="action-buttons">
                                   <button
                                     type="button"
-                                    className="btn btn-edit"
+                                    className="btn btn-action btn-edit"
                                     onClick={() => handleEdit(product)}
-                                    title="Edit"
+                                    title="Edit Product"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
                                   >
-                                    <i className="fas fa-edit"></i>
+                                    <i className="fas fa-pencil-alt"></i>
                                   </button>
                                   <button
                                     type="button"
-                                    className="btn btn-delete"
+                                    className="btn btn-action btn-delete"
                                     onClick={() => handleDelete(product.id)}
-                                    title="Delete"
+                                    title="Delete Product"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
                                   >
-                                    <i className="fas fa-trash"></i>
+                                    <i className="fas fa-trash-alt"></i>
                                   </button>
                                 </div>
                               </td>

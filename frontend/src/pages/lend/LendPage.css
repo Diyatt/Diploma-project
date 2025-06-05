@@ -138,13 +138,27 @@
 
 .action-buttons {
   display: flex;
-  gap: 0.5rem;
+  gap: 12px;
+  justify-content: flex-start;
+  align-items: center;
 }
 
-.btn-edit, .btn-delete {
-  padding: 0.5rem;
+.btn-action {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 6px;
+  font-size: 14px;
   transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.btn-action i {
+  font-size: 14px;
 }
 
 .btn-edit {
@@ -152,22 +166,35 @@
   color: #1976d2;
 }
 
-.btn-delete {
-  background-color: #ffebee;
-  color: #c62828;
-}
-
 .btn-edit:hover {
   background-color: #1976d2;
   color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-delete {
+  background-color: #ffebee;
+  color: #d32f2f;
 }
 
 .btn-delete:hover {
-  background-color: #c62828;
+  background-color: #d32f2f;
   color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Responsive Design */
+.action-label {
+  font-weight: 500;
+}
+
+/* Tooltip styles */
+[data-bs-toggle="tooltip"] {
+  position: relative;
+}
+
+/* Responsive styles */
 @media (max-width: 768px) {
   .lend-header {
     flex-direction: column;
@@ -188,5 +215,22 @@
   .product-image-container {
     width: 50px;
     height: 50px;
+  }
+
+  .action-label {
+    display: none;
+  }
+  
+  .action-buttons {
+    gap: 8px;
+  }
+  
+  .btn-action {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .btn-action i {
+    font-size: 12px;
   }
 } 

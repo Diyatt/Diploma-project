@@ -4,67 +4,79 @@ import Header from '../../components/Header/Header';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
-const steps = [
+const borrowSteps = [
   {
-    title: "Browse Categories",
-    description: "Explore our diverse categories from Electronics to Event Supplies. Find exactly what you need with our intuitive search.",
-    icon: "🔍",
+    title: "Select Category",
+    description: "Go to the homepage and select the category you're interested in: Electronics, Cars, Event Supplies, etc.",
+    icon: "📱",
     color: "#4880FF",
     gradient: "linear-gradient(135deg, #4880FF 0%, #3563E9 100%)",
     delay: 0.1
   },
   {
-    title: "Choose Items",
-    description: "Browse through carefully curated items, read reviews, and compare options to make the best choice for your needs.",
-    icon: "✨",
+    title: "Use Filters",
+    description: "Use filters to narrow your search. You can filter by location, newest listings, or price (low to high / high to low).",
+    icon: "🔍",
     color: "#FF8743",
     gradient: "linear-gradient(135deg, #FF8743 0%, #FF6B2B 100%)",
     delay: 0.2
   },
   {
-    title: "Request Rental",
-    description: "Submit your rental request with preferred dates. Our secure system ensures smooth communication with item owners.",
-    icon: "📝",
+    title: "Choose Item",
+    description: "Browse the list and choose an item that suits your needs. You can call the owner or send them a message through their profile.",
+    icon: "💬",
     color: "#4CAF50",
     gradient: "linear-gradient(135deg, #4CAF50 0%, #388E3C 100%)",
     delay: 0.3
   },
   {
-    title: "Enjoy & Return",
-    description: "Use your rented item worry-free. Our platform ensures safe returns and handles any issues that may arise.",
-    icon: "🔄",
+    title: "Discuss Details",
+    description: "Discuss the rental details directly with the owner: price, rental duration, and delivery/pickup method. Done!",
+    icon: "🤝",
     color: "#9C27B0",
     gradient: "linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%)",
     delay: 0.4
   }
 ];
 
-const benefits = [
+const lendSteps = [
   {
-    title: "Secure Payments",
-    description: "All transactions are protected with industry-standard encryption",
-    icon: "🔒",
+    title: "Create Account",
+    description: "Create a new account if you're a first-time user — it only takes a minute! If you already have an account, simply log in.",
+    icon: "👤",
     color: "#4880FF",
+    gradient: "linear-gradient(135deg, #4880FF 0%, #3563E9 100%)",
     delay: 0.1
   },
   {
-    title: "24/7 Support",
-    description: "Our dedicated team is always here to help you",
-    icon: "💬",
+    title: "Add Item",
+    description: "Click 'Add Item,' choose a category, and provide full details: name, description, price, and quantity.",
+    icon: "➕",
     color: "#FF8743",
+    gradient: "linear-gradient(135deg, #FF8743 0%, #FF6B2B 100%)",
     delay: 0.2
   },
   {
-    title: "Verified Users",
-    description: "Every user is verified for your peace of mind",
-    icon: "✓",
+    title: "Publish",
+    description: "Once you fill out the form, click 'Publish.' Your item will be marked as 'In Process' and sent for admin approval.",
+    icon: "📤",
     color: "#4CAF50",
+    gradient: "linear-gradient(135deg, #4CAF50 0%, #388E3C 100%)",
     delay: 0.3
+  },
+  {
+    title: "Get Approved",
+    description: "After the admin reviews and approves your item by clicking 'Approve,' it will be live on the site — ready to be rented out!",
+    icon: "✅",
+    color: "#9C27B0",
+    gradient: "linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%)",
+    delay: 0.4
   }
 ];
 
 function IborrowedPage() {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
+  const [activeTab, setActiveTab] = React.useState('borrow');
 
   return (
     <div className="d-flex">
@@ -92,23 +104,49 @@ function IborrowedPage() {
                     </h2>
                     <p className="text-muted mb-4">Your trusted platform for hassle-free rentals</p>
                     <div className="iborrowed-tabs d-flex justify-content-center mb-4">
-                    <Link
-                        to="/home/"
-                        className="iborrowed-tab-btn"
+                      <button
+                        onClick={() => setActiveTab('borrow')}
+                        className={`iborrowed-tab-btn ${activeTab === 'borrow' ? 'active' : ''}`}
+                        style={{
+                          padding: '10px 25px',
+                          margin: '0 10px',
+                          border: 'none',
+                          borderRadius: '8px',
+                          fontSize: '1.1rem',
+                          fontWeight: '500',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          backgroundColor: activeTab === 'borrow' ? '#4880FF' : '#f8f9fa',
+                          color: activeTab === 'borrow' ? 'white' : '#6c757d',
+                          boxShadow: activeTab === 'borrow' ? '0 4px 12px rgba(72, 128, 255, 0.3)' : 'none'
+                        }}
                       >
                         Borrow
-                      </Link>
-                      <Link
-                        to="/lend/"
-                        className="iborrowed-tab-btn"
+                      </button>
+                      <button
+                        onClick={() => setActiveTab('lend')}
+                        className={`iborrowed-tab-btn ${activeTab === 'lend' ? 'active' : ''}`}
+                        style={{
+                          padding: '10px 25px',
+                          margin: '0 10px',
+                          border: 'none',
+                          borderRadius: '8px',
+                          fontSize: '1.1rem',
+                          fontWeight: '500',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          backgroundColor: activeTab === 'lend' ? '#4880FF' : '#f8f9fa',
+                          color: activeTab === 'lend' ? 'white' : '#6c757d',
+                          boxShadow: activeTab === 'lend' ? '0 4px 12px rgba(72, 128, 255, 0.3)' : 'none'
+                        }}
                       >
                         Lend
-                      </Link>
+                      </button>
                     </div>
                   </motion.div>
 
                   <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
-                    {steps.map((step, idx) => (
+                    {(activeTab === 'lend' ? lendSteps : borrowSteps).map((step, idx) => (
                       <motion.div 
                         className="col" 
                         key={idx}
@@ -147,44 +185,7 @@ function IborrowedPage() {
                     ))}
                   </div>
 
-                  <div className="benefits-section py-5 bg-light rounded-4 mb-5">
-                    <div className="row row-cols-1 row-cols-md-3 g-4">
-                      {benefits.map((benefit, idx) => (
-                        <motion.div 
-                          className="col" 
-                          key={idx}
-                          initial={{ opacity: 0, scale: 0.9 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ delay: benefit.delay, duration: 0.5 }}
-                          whileHover={{ scale: 1.05, y: -5 }}
-                        >
-                          <div 
-                            className="benefit-card text-center p-4"
-                            style={{
-                              background: `linear-gradient(135deg, ${benefit.color}15 0%, ${benefit.color}08 100%)`,
-                              border: `1px solid ${benefit.color}20`,
-                              boxShadow: `0 4px 16px ${benefit.color}15`
-                            }}
-                          >
-                            <motion.span 
-                              className="benefit-icon mb-3 d-inline-block" 
-                              style={{ 
-                                fontSize: '2.5rem',
-                                color: benefit.color,
-                                transform: 'rotate(-10deg)',
-                                transition: 'transform 0.3s ease'
-                              }}
-                              whileHover={{ rotate: 0, scale: 1.2 }}
-                            >
-                              {benefit.icon}
-                            </motion.span>
-                            <h5 className="mb-2 fw-bold" style={{ color: benefit.color }}>{benefit.title}</h5>
-                            <p className="text-muted mb-0">{benefit.description}</p>
-                          </div>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </div>
+                  
 
                   <motion.div 
                     className="text-center mt-4"
@@ -197,9 +198,12 @@ function IborrowedPage() {
                       whileTap={{ scale: 0.95 }}
                       transition={{ type: "spring", stiffness: 400, damping: 17 }}
                     >
-                      <Link to="/home" className="btn btn-primary btn-lg start-btn">
+                      <Link 
+                        to={activeTab === 'lend' ? "/lend/" : "/home"} 
+                        className="btn btn-primary btn-lg start-btn"
+                      >
                         <i className="fas fa-rocket me-2"></i>
-                        Get Started Now
+                        {activeTab === 'lend' ? 'Start Lending Now' : 'Get Started Now'}
                       </Link>
                     </motion.div>
                     <motion.p 
@@ -208,7 +212,9 @@ function IborrowedPage() {
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.6 }}
                     >
-                      Join thousands of satisfied users who trust Arent for their rental needs
+                      {activeTab === 'lend' 
+                        ? 'Join our community of trusted lenders and start earning today'
+                        : 'Join thousands of satisfied users who trust Arent for their rental needs'}
                     </motion.p>
                   </motion.div>
                 </div>
