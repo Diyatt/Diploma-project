@@ -31,21 +31,35 @@ function VerifyEmailPage() {
     const fullCode = codeDigits.join("");
 
     try {
-      const res = await api.post("/auth/verify-email/", {
+      // First verify the email
+      const verifyRes = await api.post("/auth/verify-email/", {
         email,
         code: fullCode,
       });
 
-      const storedUserData = JSON.parse(localStorage.getItem("userData")) || {};
-      const verifiedUser = {
-        ...res.data,
-        token: storedUserData.token,
-        refresh: storedUserData.refresh,
+      // Get the tokens from verification response
+      const { access, refresh } = verifyRes.data;
+
+      // Set the authorization header for subsequent requests
+      api.defaults.headers.common['Authorization'] = `Bearer ${access}`;
+
+      // Get the complete user data
+      const userRes = await api.get("/users/me/");
+      
+      // Combine all user data with tokens
+      const userData = {
+        ...userRes.data,
+        token: access,
+        refresh: refresh
       };
 
-      login(verifiedUser); // ✅ Барлық дерек (id, username, email, token...) сақталады
+      // Store in localStorage and context
+      localStorage.setItem('userData', JSON.stringify(userData));
+      login(userData);
+
       navigate("/home");
     } catch (err) {
+      console.error("Verification error:", err);
       setError("Code is incorrect or expired!");
       setCodeDigits(["", "", "", "", "", ""]);
     } finally {
@@ -113,7 +127,7 @@ function VerifyEmailPage() {
                     </button>
                   </form>
                 <p className="mt-3">
-                    Didn’t get a code?{" "}
+                    Didn't get a code?{" "}
                     <button
                       type="button"
                       className="btn btn-link p-0"

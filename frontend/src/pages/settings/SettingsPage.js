@@ -30,6 +30,12 @@ function SettingsPage() {
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
+        // Get user data from localStorage and set authorization header
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        if (userData?.token) {
+          api.defaults.headers.common['Authorization'] = `Bearer ${userData.token}`;
+        }
+
         const [regionsRes, districtsRes] = await Promise.all([
           api.get("/regions/"),
           api.get("/districts/"),
@@ -44,23 +50,22 @@ function SettingsPage() {
         const userRes = await api.get("/users/me/");
         const data = userRes.data;
   
-        console.log("User data district:", data.district);
+        console.log("User data:", data); // Add this log to debug
+  
         const regionObj = regionsData.find((r) => r.name === data.region);
         const regionId = regionObj ? regionObj.id : "";
   
         const filteredDistricts = districtsData.filter(
           (d) => d.region.id === regionId
         );
-        console.log("Filtered districts:", filteredDistricts);
         setDistricts(filteredDistricts);
   
         // 💡 Extract just the district name part before the region in parentheses
-        const cleanDistrictName = data.district.split(' (')[0];
+        const cleanDistrictName = data.district ? data.district.split(' (')[0] : "";
   
         const districtObj = filteredDistricts.find(
           (d) => d.name === cleanDistrictName
         );
-        console.log("Found district object:", districtObj);
   
         const districtId = districtObj ? districtObj.id : "";
   
@@ -75,7 +80,7 @@ function SettingsPage() {
   
         setProfilePicturePreview(data.profile_picture);
       } catch (error) {
-        console.error("Failed to load settings data", error);
+        console.error("Failed to load settings data:", error);
       }
     };
   
@@ -139,13 +144,24 @@ function SettingsPage() {
     }
 
     try {
-      await api.put("/update-profile/", formData);
-      alert("✅ Профиль сәтті жаңартылды!");
+      const updateRes = await api.put("/update-profile/", formData);
+      console.log("Profile update response:", updateRes.data);
 
-      const updated = await api.get("/users/me/");
-      localStorage.setItem("userData", JSON.stringify(updated.data));
-      setProfilePicturePreview(updated.data.profile_picture);
+      // Get fresh user data after update
+      const userRes = await api.get("/users/me/");
+      const updatedUserData = {
+        ...userRes.data,
+        token: JSON.parse(localStorage.getItem('userData'))?.token,
+        refresh: JSON.parse(localStorage.getItem('userData'))?.refresh
+      };
+
+      // Update both localStorage and context
+      localStorage.setItem("userData", JSON.stringify(updatedUserData));
+      setProfilePicturePreview(updatedUserData.profile_picture);
+      
+      alert("✅ Профиль сәтті жаңартылды!");
     } catch (err) {
+      console.error("Profile update error:", err);
       alert("❌ Қате: Профиль жаңартылмады");
     }
   };

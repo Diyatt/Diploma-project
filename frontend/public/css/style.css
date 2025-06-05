@@ -726,3 +726,285 @@ iframe {
 .chat-footer input {
   border-radius: 20px;
 }
+
+/* Enhanced IborrowedPage Styles */
+.Iborrowed-conntent {
+    background-color: #fff;
+    border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.Iborrowed-conntent .card {
+    border: none;
+    border-radius: 24px;
+    transition: transform 0.3s ease;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+.Iborrowed-conntent .step-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2.5rem 1.5rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+.Iborrowed-conntent .step-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--step-color, #4880FF), transparent);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.Iborrowed-conntent .step-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+    border-color: transparent;
+}
+
+.Iborrowed-conntent .step-card:hover::before {
+    opacity: 1;
+}
+
+.Iborrowed-conntent .step-icon {
+    width: 90px;
+    height: 90px;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.Iborrowed-conntent .step-card:hover .step-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.iborrowed-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    color: #1a1a1a;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+}
+
+.iborrowed-title .brand-name {
+    color: #4880FF;
+    font-weight: 900;
+    position: relative;
+    display: inline-block;
+}
+
+.iborrowed-title .brand-name::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, #4880FF, transparent);
+    border-radius: 2px;
+}
+
+.iborrowed-tabs {
+    gap: 2rem;
+    margin-top: 2.5rem;
+}
+
+.iborrowed-tab-btn {
+    /* Removed previous styles for inactive state */
+    background: #4880FF; /* Set background to blue */
+    color: #fff; /* Set text color to white */
+    box-shadow: 0 4px 16px rgba(72, 128, 255, 0.3); /* Keep a consistent shadow */
+    border: none; /* Ensure no border */
+    border-radius: 50px; /* Keep the pill shape */
+    padding: 1rem 2.5rem; /* Keep consistent padding */
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* Keep transition */
+    margin: 0 0.5rem; /* Keep margin */
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    cursor: pointer; /* Add cursor pointer */
+}
+
+/* Remove the active specific styles */
+.iborrowed-tab-btn.active {
+    background: #4880FF; /* Keep background consistent */
+    color: #fff; /* Keep color consistent */
+    box-shadow: 0 4px 16px rgba(72, 128, 255, 0.3); /* Keep shadow consistent */
+    border-bottom: none;
+    border-radius: 50px;
+    padding: 1rem 2.5rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Remove the ::after pseudo-element styles as the underline is no longer needed */
+.iborrowed-tab-btn::after {
+    content: '';
+    position: absolute;
+    bottom: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0; /* Ensure no underline */
+    background-color: transparent; /* Ensure no background */
+    transition: background-color 0.3s ease;
+}
+
+/* Remove the ::before pseudo-element styles */
+.iborrowed-tab-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Add hover effect */
+.iborrowed-tab-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(72, 128, 255, 0.35);
+    background: linear-gradient(45deg, #3563E9, #4880FF);
+    color: #fff;
+}
+
+.benefits-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 24px;
+    padding: 3.5rem 2rem;
+    margin: 2.5rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.benefits-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, rgba(72, 128, 255, 0.05), transparent);
+    opacity: 0.5;
+}
+
+.benefit-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2.5rem;
+    height: 100%;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+.benefit-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+}
+
+.benefit-icon {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.benefit-card:hover .benefit-icon {
+    transform: scale(1.2) rotate(0deg);
+}
+
+.start-btn {
+    background: linear-gradient(45deg, #4880FF, #3563E9);
+    border: none;
+    padding: 1.2rem 3.5rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border-radius: 16px;
+    color: #fff;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 16px rgba(72, 128, 255, 0.25);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.start-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.start-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(72, 128, 255, 0.35);
+    background: linear-gradient(45deg, #3563E9, #4880FF);
+}
+
+.start-btn:hover::before {
+    opacity: 1;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .iborrowed-title {
+        font-size: 2rem;
+    }
+    
+    .step-card {
+        padding: 1.5rem;
+    }
+    
+    .iborrowed-tab-btn {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    .benefits-section {
+        padding: 2rem 1rem;
+    }
+    
+    .benefit-card {
+        padding: 1.5rem;
+    }
+    
+    .start-btn {
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+    }
+}
