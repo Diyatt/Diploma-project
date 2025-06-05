@@ -27,10 +27,42 @@ function SettingsPage() {
   const [allDistricts, setAllDistricts] = useState([]);
   const [districts, setDistricts] = useState([]);
 
+  const handleProfileChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "region" || name === "district") {
+      setProfileData((prev) => ({
+        ...prev,
+        [name]: value === "" ? "" : Number(value),
+      }));
+    } else {
+      setProfileData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
+
+  useEffect(() => {
+    if (profileData.region) {
+      const filtered = allDistricts.filter(
+        (d) => d.region.id === Number(profileData.region)
+      );
+      setDistricts(filtered);
+      if (!profileData.district) {
+        setProfileData((prev) => ({
+          ...prev,
+          district: "",
+        }));
+      }
+    } else {
+      setDistricts([]);
+    }
+  }, [profileData.region, allDistricts]);
+
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        // Get user data from localStorage and set authorization header
         const userData = JSON.parse(localStorage.getItem('userData'));
         if (userData?.token) {
           api.defaults.headers.common['Authorization'] = `Bearer ${userData.token}`;
@@ -50,34 +82,44 @@ function SettingsPage() {
         const userRes = await api.get("/users/me/");
         const data = userRes.data;
   
-        console.log("User data:", data); // Add this log to debug
+        console.log("User data:", data);
+        console.log("Raw district from API:", data.district);
   
         const regionObj = regionsData.find((r) => r.name === data.region);
         const regionId = regionObj ? regionObj.id : "";
   
+        console.log("Found region:", regionObj);
+        console.log("Region ID:", regionId);
+  
         const filteredDistricts = districtsData.filter(
           (d) => d.region.id === regionId
         );
-        setDistricts(filteredDistricts);
+        console.log("Filtered districts:", filteredDistricts);
   
-        // 💡 Extract just the district name part before the region in parentheses
         const cleanDistrictName = data.district ? data.district.split(' (')[0] : "";
+        console.log("Clean district name:", cleanDistrictName);
   
         const districtObj = filteredDistricts.find(
-          (d) => d.name === cleanDistrictName
+          (d) => d.name.toLowerCase() === cleanDistrictName.toLowerCase()
         );
+        console.log("Found district object:", districtObj);
   
         const districtId = districtObj ? districtObj.id : "";
-  
-        setProfileData({
+        console.log("Final district ID:", districtId);
+
+        setDistricts(filteredDistricts);
+        
+        const finalProfileData = {
           full_name: data.full_name || "",
           email: data.email || "",
           phone_number: data.phone_number || "",
           region: regionId,
-          district: districtId,
+          district: districtId ? Number(districtId) : "",
           local_address: data.local_address || "",
-        });
+        };
+        console.log("Setting final profile data:", finalProfileData);
   
+        setProfileData(finalProfileData);
         setProfilePicturePreview(data.profile_picture);
       } catch (error) {
         console.error("Failed to load settings data:", error);
@@ -86,40 +128,6 @@ function SettingsPage() {
   
     fetchInitialData();
   }, []);
-  
-  useEffect(() => {
-    if (profileData.region) {
-      const filtered = allDistricts.filter(
-        (d) => d.region.id === Number(profileData.region)
-      );
-      setDistricts(filtered);
-      setProfileData((prev) => ({
-        ...prev,
-        district: "", // reset district selection when region changes
-      }));
-    } else {
-      setDistricts([]);
-    }
-  }, [profileData.region, allDistricts]);
-  
-  
-  
-
-  const handleProfileChange = (e) => {
-    const { name, value } = e.target;
-
-    if (name === "region" || name === "district") {
-      setProfileData((prev) => ({
-        ...prev,
-        [name]: value === "" ? "" : Number(value),
-      }));
-    } else {
-      setProfileData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
-  };
 
   const handlePictureChange = (e) => {
     const file = e.target.files[0];
@@ -147,7 +155,6 @@ function SettingsPage() {
       const updateRes = await api.put("/update-profile/", formData);
       console.log("Profile update response:", updateRes.data);
 
-      // Get fresh user data after update
       const userRes = await api.get("/users/me/");
       const updatedUserData = {
         ...userRes.data,
@@ -155,7 +162,6 @@ function SettingsPage() {
         refresh: JSON.parse(localStorage.getItem('userData'))?.refresh
       };
 
-      // Update both localStorage and context
       localStorage.setItem("userData", JSON.stringify(updatedUserData));
       setProfilePicturePreview(updatedUserData.profile_picture);
       
@@ -294,11 +300,14 @@ function SettingsPage() {
                           className="form-select form-control-new"
                         >
                           <option value="">Select District</option>
-                          {districts.map((d) => (
-                            <option key={d.id} value={d.id}>
-                              {d.name}
-                            </option>
-                          ))}
+                          {districts.map((d) => {
+                            console.log("Rendering district option:", d.id, d.name, "Current value:", profileData.district);
+                            return (
+                              <option key={d.id} value={d.id}>
+                                {d.name}
+                              </option>
+                            );
+                          })}
                         </select>
                       </div>
                       <div className="col-md-6">
