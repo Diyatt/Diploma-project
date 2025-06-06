@@ -33,57 +33,28 @@ function ProductDetailPage() {
 
   const handleWishlist = async () => {
     try {
-      if (!userData || !userData.id) {
+      if (!userData?.id) {
         alert("Сіз жүйеге кірмегенсіз!");
         return;
       }
 
       if (!liked) {
-        // Add to wishlist
-        const response = await api.post("/wishlist/", { 
-          product: parseInt(id)
-        });
-        
-        if (response.data) {
-          setLiked(true);
-          setWishlistId(response.data.id);
-          // Update product data to reflect the change
-          setProduct(prev => ({
-            ...prev,
-            is_favorite: true,
-            wishlist_id: response.data.id
-          }));
-          alert("Өнім таңдаулыларға қосылды!");
-        }
+        // ✅ Таңдаулыларға қосу
+        await api.post("/wishlist/", { product_id: id });
+        setLiked(true);
       } else {
-        // Remove from wishlist
-        const wishlistIdToDelete = wishlistId || product?.wishlist_id;
-        
-        if (!wishlistIdToDelete) {
+        // ✅ Таңдаулылардан өшіру
+        if (!product.wishlist_id) {
           alert("Өнім ID табылмады.");
           return;
         }
 
-        await api.delete(`/wishlist/${wishlistIdToDelete}/`);
+        await api.delete(`/wishlist/${id}/`);
         setLiked(false);
-        setWishlistId(null);
-        // Update product data to reflect the change
-        setProduct(prev => ({
-          ...prev,
-          is_favorite: false,
-          wishlist_id: null
-        }));
-        alert("Өнім таңдаулылардан өшірілді!");
       }
     } catch (error) {
       console.error("Тізім өңдеу қатесі:", error);
-      if (error.response?.status === 401) {
-        alert("Сіз жүйеге кірмегенсіз!");
-      } else if (error.response?.status === 400) {
-        alert("Өнім қазірдің өзінде таңдаулылар тізімінде бар.");
-      } else {
-        alert("Қате орын алды. Қайта көріңіз.");
-      }
+      alert("Қате орын алды. Қайта көріңіз.");
     }
   };
 
@@ -165,12 +136,11 @@ function ProductDetailPage() {
         // Fetch product data
         const productResponse = await api.get(`/products/${id}/`);
         const productData = productResponse.data;
-        setProduct(productData);
         
         // Set initial wishlist state from product data
         setLiked(productData.is_favorite || false);
-        setWishlistId(productData.wishlist_id || null);
-
+        setProduct(productData);
+        
         // Fetch reviews
         const reviewsResponse = await api.get(`/products/${id}/reviews/`);
         setReviews(reviewsResponse.data);
