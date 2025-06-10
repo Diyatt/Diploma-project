@@ -37,7 +37,7 @@ class ChatBotView(APIView):
                 if products.exists():
                     # Формируем список найденных товаров
                     response_text = f"Found {products.count()} alternatives:\n" + "\n".join(
-                        [f"- {p.name} ({p.price} ₸/day): {'http://localhost:3000/products'}/{p.id}" for p in products]
+                        [f"- {p.name} ({p.price} ₸/day): {'http://localhost:3000/product'}/{p.id}" for p in products]
                     )
 
                 else:
@@ -53,7 +53,7 @@ class ChatBotView(APIView):
                     products = get_fallback_products(category)
                     if products.exists():
                         response_text += "\n\nYou might also be interested in:\n" + "\n".join(
-                            [f"- {p.name} ({p.price} ₸/day): {'http://localhost:3000/products'}/{p.id}" for p in products]
+                            [f"- {p.name} ({p.price} ₸/day): {'http://localhost:3000/product'}/{p.id}" for p in products]
                         )
                 # Сохраняем и возвращаем
                 chat_message = ChatMessage.objects.create(user=user, query=user_query, response=response_text)
