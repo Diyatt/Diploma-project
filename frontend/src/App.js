@@ -41,7 +41,7 @@ function App() {
           <Route path="/edit/:id" element={<ProductEditPage />} />
           <Route path="/favorites" element={<FavoritesPage />} />
           <Route path="/mychat" element={<MyChatPages />} />
-          <Route path="/myprofille" element={<ProfillePage />} />
+          <Route path="/myprofile" element={<ProfillePage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/product/:id" element={<ProductDetailPage />} />
           <Route path="/register" element={<RegisterPage />} />
