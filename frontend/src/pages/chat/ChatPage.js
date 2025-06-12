@@ -104,7 +104,7 @@ function ChatPage() {
                       <strong>{chatUser?.full_name || chatUser?.username || "User"}</strong>
                     </div>
 
-                    <div className="chat-body p-3" style={{ maxHeight: "400px", overflowY: "auto" }}>
+                    <div className="chat-body p-3" style={{ overflowY: "auto" }}>
                       {messages.map((msg) => {
                         const isOwn = msg.sender?.id === currentUserId;
 

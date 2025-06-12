@@ -10,7 +10,7 @@ import ProductImage from "../../assets/img/product1.png";
 import Pereolder from "../../assets/img/Animation.gif";
 import './LendPage.css'; // We'll create this file next
 import { Tooltip } from 'bootstrap';
-import '@fortawesome/fontawesome-free/css/all.min.css';
+// import '@fortawesome/fontawesome-free/css/all.min.css';
 
 function LendPage() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);

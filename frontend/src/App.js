@@ -18,7 +18,8 @@ import EmailVerificationPage from "./pages/login/EmailVerificationPage";
 import ForgetPassword from "./pages/login/ForgetPassword";
 import CategoryProductsPage from "./pages/product/CategoryProductsPage";
 import ProfillePage from "./pages/profille/ProfillePage";
-import ResetPasswordPage from "./pages/login/ResetPassword"
+import ResetPasswordPage from "./pages/login/ResetPassword";
+import ChatWidget from "./components/ChatWidget/ChatWidget";
 
 function PrivateRoute({ children }) {
   const { user } = useUser();
@@ -49,6 +50,7 @@ function App() {
           <Route path="/category/:id" element={<CategoryProductsPage />} />
           <Route path="/password-reset-confirm/:token" element={<ResetPasswordPage />} />
         </Routes>
+        <ChatWidget />
       </UserProvider>
     </Router>
   );

@@ -1,9 +1,9 @@
 import { useUser } from "../../contexts/UserContext";
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import Logo from "../Logo/Logo";
+import { useState, useEffect } from 'react';
 
-
-const Sidebar = ({ isOpen, toggleSidebar }) => {
+const Sidebar = ({ isOpen, toggleSidebar}) => {
   const navigate = useNavigate();
   const handleLogin = () => {
     // Логин логикасын қосуға болады
@@ -15,11 +15,26 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     logout();           // 🔐 Жүйеден шығу
     navigate("/");      // ⬅ Басты бетке бағыттау (қаласаң /login немесе /landing деп өзгерте аласың)
   };
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= 991);
+    };
 
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+  console.log(isOpen)
   return (
-    <div className={`sidebar ${
-        isOpen ? "collapsed" : "-translate-x-full"
-      }`}>
+    <div
+      style={{
+        zIndex: isMobile ? 9999 : 1,
+        display: isMobile && !isOpen ? 'none' : 'block'
+      }}
+      className={`sidebar${isMobile && !isOpen ? ' collapsed' : ''}${!isMobile && isOpen ? ' collapsed' : ''}`}
+    >
       <div className="sidebar-header">
         <Link to="/home" className="sidebar-logo-link">
                   <Logo width={isOpen ? "50" : "170"} height={isOpen ? "30" : "30"} />
@@ -30,7 +45,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       
       <nav className="nav flex-column">
           <NavLink className="nav-link" activeClassName="active" to="/home">
-              <svg className={`svg-nav ${isOpen ? "d-opacity" : ""}`} 
+              <svg className={`svg-nav ${isMobile ? "d-none" : ""} ${isOpen ? "d-opacity" : ""}`} 
               width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g opacity="1.300291">
 <rect opacity="0.01" width="24" height="24" fill="gray"/>
@@ -43,7 +58,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           </NavLink>
           <NavLink className="nav-link" activeClassName="active" to="/favorites">
             <svg 
-              className={`svg-nav ${isOpen ? "d-opacity" : ""}`} 
+              className={`svg-nav ${isMobile ? "d-none" : ""} ${isOpen ? "d-opacity" : ""}`} 
               width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
             >
                   <g opacity="1.300291">
@@ -56,7 +71,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           </NavLink>
           <NavLink className="nav-link" activeClassName="active" to="/mychat">
             <svg 
-              className={`svg-nav ${isOpen ? "d-opacity" : ""}`} 
+              className={`svg-nav ${isMobile ? "d-none" : ""} ${isOpen ? "d-opacity" : ""}`} 
               width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
             >
                   <g opacity="1.300291">
@@ -69,7 +84,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           </NavLink>
           <NavLink className="nav-link" activeClassName="active" to="/Iborrowed">
             <svg 
-              className={`svg-nav ${isOpen ? "d-opacity" : ""}`} 
+              className={`svg-nav ${isMobile ? "d-none" : ""} ${isOpen ? "d-opacity" : ""}`} 
               width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
             >
                   <g opacity="1.300291">
@@ -83,7 +98,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           </NavLink>
           <NavLink className="nav-link" activeClassName="active"  to="/lend">
             <svg 
-              className={`svg-nav ${isOpen ? "d-opacity" : ""}`} 
+              className={`svg-nav ${isMobile ? "d-none" : ""} ${isOpen ? "d-opacity" : ""}`} 
               width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
             >
                   <g opacity="1.300291">
@@ -98,7 +113,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           </NavLink>
           <NavLink className="nav-link" activeClassName="active" to="/settings">
             <svg 
-              className={`svg-nav ${isOpen ? "d-opacity" : ""}`} 
+              className={`svg-nav ${isMobile ? "d-none" : ""} ${isOpen ? "d-opacity" : ""}`} 
               width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
             >
                   <g opacity="1.300291">
@@ -112,7 +127,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           <a onClick={handleLogout} className="nav-link" style={{ cursor: "pointer" }}>
           
 
-              <svg className={`svg-nav ${isOpen ? "d-opacity" : ""}`}  width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg className={`svg-nav ${isMobile ? "d-none" : ""} ${isOpen ? "d-opacity" : ""}`}  width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <g opacity="1.3003">
                     <path fill-rule="evenodd" clip-rule="evenodd" d="M11.9999 22C17.5228 22 21.9999 17.5228 21.9999 12C21.9999 6.47715 17.5228 2 11.9999 2C6.81459 2 2.55104 5.94668 2.04932 11H11.5857L8.29283 7.70711L9.70705 6.29289L14.707 11.2929L15.4142 12L14.707 12.7071L9.70705 17.7071L8.29283 16.2929L11.5857 13H2.04932C2.55104 18.0533 6.81459 22 11.9999 22Z" fill="gray"/>
                    </g>

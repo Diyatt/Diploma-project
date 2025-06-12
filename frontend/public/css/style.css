@@ -26,13 +26,22 @@ body {
     opacity: 0;
 }
 .content {
-    margin-left: 250px;
-    transition: margin-left 0.3s;
+    
+    
     width: 100%;
+    margin-left: 250px;
     padding: 20px;
 }
 .collapsed + .content {
     margin-left: 80px;
+}
+@media (max-width:768px) {
+    .collapsed + .content {
+        margin-left: 0;
+    }
+    .content{
+        margin-left: 0;
+    }
 }
 .header {
     background: #fff;
@@ -48,6 +57,12 @@ body {
 .collapsed + .content .header {
     left: 80px;
     width: calc(100% - 80px);
+}
+@media (max-width:768px) {
+    .collapsed + .content .header {
+        left: 0;
+        width: 100%;
+    }
 }
 .sidebar-toggle{
     border: none;
@@ -369,6 +384,16 @@ body {
     border: 1px solid rgba(213, 213, 213, 1);
     background: #fff;
 }
+.nav_settings{
+    display: flex !important;
+
+}
+@media (max-width:768px) {
+    .nav_settings{
+        display: flex !important;
+        
+    }
+}
 
 .favorites-header h4, .Iborrowed-header h4{
     color: rgba(32, 34, 36, 1);
@@ -409,8 +434,12 @@ body {
 
  .card-custom {
   border-radius: 16px;
-/*  box-shadow: 0 4px 16px rgba(0,0,0,0.1);*/
-  padding: 20px;
+  padding: 45px 180px;
+}
+@media (max-width:768px) {
+    .card-custom {
+        padding: 10px 50px
+    }
 }
 .thumbnail img {
   width: 100%;
@@ -698,6 +727,11 @@ iframe {
   padding: 20px;
   max-height: 400px;
   overflow-y: auto;
+}
+@media (max-width: 768px) {
+  .chat-body {
+    max-height: 500px !important;
+  }
 }
 .message {
   margin-bottom: 20px;

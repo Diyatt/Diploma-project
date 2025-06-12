@@ -29,8 +29,6 @@ const Header = ({ toggleSidebar }) => {
                       </g>
                   </svg>
               </button>
-
-            
           </div>
 
           <ul className="topbar-menu d-flex align-items-center gap-3">
@@ -58,7 +56,7 @@ const Header = ({ toggleSidebar }) => {
                       <div className="dropdown-header noti-title">
                           <h6 className="text-overflow m-0">Welcome !</h6>
                       </div>
-                      <Link to="/myprofille" className="dropdown-item">
+                      <Link to="/myprofile" className="dropdown-item">
                         <i className="mdi mdi-account-circle me-1"></i>
                           <span>My Account</span>
                       </Link>

@@ -203,9 +203,9 @@ function SettingsPage() {
 
             <div
               className="card-custom bg-white rounded p-25"
-              style={{ borderRadius: "15px", padding: "45px 180px" }}
+              style={{ borderRadius: "15px", }}
             >
-              <ul className="nav nav-tabs mb-3">
+              <ul className="nav_settings nav nav-tabs">
                 <li className="nav-item">
                   <button
                     className={`nav-link ${

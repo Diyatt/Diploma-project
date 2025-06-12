@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_BACKEND_URL + '/api',
+  baseURL:'https://arent-production.up.railway.app' + '/api',
   withCredentials: true,  // Егер куки қажет болса
 });
 

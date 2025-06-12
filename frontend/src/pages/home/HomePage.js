@@ -49,41 +49,56 @@ function HomePage() {
     };
     fetchProducts();
   }, []);
+  const [isMobile, setIsMobile] = useState(false);
 
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= 991);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
   return (
     <div className="">
       <div className="d-flex">
-        <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(false)} />
-        <div className={`content ${isSidebarOpen ? "collapsed" : ""}`}>
+        {/* Only show Sidebar on desktop */}
+        {/* {!isMobile && ( */}
+          <Sidebar  isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(false)} />
+        {/* )} */}
+        <div className={`content ${isSidebarOpen ? "collapsed" : ""}`} style={isMobile ? { marginLeft: 0 } : {}}>
           <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-          <div className="main" style={{ marginTop: "60px" }}>
+          <div style={{ marginTop: "60px" }}>
             <div className="container">
               <ReusableHeading text="Rent anything in any time, don’t think just do it" />
               <Carousel />
 
               {/* Категориялар */}
               <ReusableHeading text="Category" />
-                <div className="row p-50">
-                  {loadingCategories ? (
-                    <div className="loading-container text-center">
-                      <img src={Pereolder} alt="Loading..." />
+              <div className="row p-2">
+                {loadingCategories ? (
+                  <div className="loading-container text-center">
+                    <img src={Pereolder} alt="Loading..." />
+                  </div>
+                ) : (
+                  categories.map((category) => (
+                    <div
+                      className="col-12 col-sm-6 col-md-3 mb-3"
+                      key={category.id}
+                      onClick={() => navigate(`/category/${category.id}`)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <CategoryCard
+                        isMobile={isMobile}
+                        title={category.category_name}
+                        imageSrc={category.image}
+                      />
                     </div>
-                  ) : (
-                    categories.map((category) => (
-                      <div
-                        className="col-md-3"
-                        key={category.id}
-                        onClick={() => navigate(`/category/${category.id}`)}
-                        style={{ cursor: "pointer" }}
-                      >
-                        <CategoryCard
-                          title={category.category_name}
-                          imageSrc={category.image}
-                        />
-                      </div>
-                    ))
-                  )}
-                </div>
+                  ))
+                )}
+              </div>
               {/* Өнімдер */}
               <div className="product-conntent">
                 <div className="product-header d-flex justify-content-between">
@@ -95,8 +110,8 @@ function HomePage() {
                       <img src={Pereolder} alt="Loading..." />
                     </div>
                   ) : (
-                    <div className="row ">
-                      {products.map((product) => (
+                    <div className="row">
+                          {products.map((product) => (
                         <ProductCard
                         key={product.id}
                         id={product.id}
@@ -117,7 +132,6 @@ function HomePage() {
                   )}
                 </div>
               </div>
-
             </div>
           </div>
         </div>

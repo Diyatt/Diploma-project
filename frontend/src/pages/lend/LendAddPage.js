@@ -5,6 +5,7 @@ import Header from '../../components/Header/Header';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import './LendAddPage.css';
 
 // Add custom styles for Toastify
 const toastStyles = `
@@ -213,7 +214,7 @@ function LendAddPage() {
               </div>
             </div>
 
-            <div className="card-custom bg-white rounded p-25" style={{ borderRadius: "15px", padding: "45px 180px" }}>
+            <div className="card-custom bg-white rounded p-25 lend-add-form" style={{ borderRadius: "15px" }}>
               <form onSubmit={handleSubmit} encType="multipart/form-data">
                 <div className="row mb-4">
                   {[0, 1, 2, 3].map((i) => (
@@ -389,13 +390,11 @@ function LendAddPage() {
                           >
                             <div 
                               style={{
-                                width: '48px',
-                                height: '48px',
+                                
                                 borderRadius: '50%',
                                 backgroundColor: '#e9ecef',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
+                               
+                                padding:'5px',
                                 marginBottom: '0.75rem'
                               }}
                             >
