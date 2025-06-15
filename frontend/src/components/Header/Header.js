@@ -3,10 +3,14 @@ import UserImage from "../../assets/img/defaultProfile.png";
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useUser } from "../../contexts/UserContext";
 import Logo from "../Logo/Logo";
+import { useState, useRef, useEffect } from 'react';
+import './Header.css';
 
 const Header = ({ toggleSidebar }) => {
   const navigate = useNavigate();
   const { user } = useUser();
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   const username = user?.username || "Guest";
   const email = user?.email || "";
@@ -17,7 +21,20 @@ const Header = ({ toggleSidebar }) => {
     logout();
     navigate("/");
   };
-  
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="header">
       <div className="topbar container-fluid">
@@ -32,8 +49,11 @@ const Header = ({ toggleSidebar }) => {
           </div>
 
           <ul className="topbar-menu d-flex align-items-center gap-3">
-              <li className="dropdown">
-                  <a className="nav-link dropdown-toggle arrow-none nav-user px-2" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+              <li className="dropdown" ref={dropdownRef}>
+                  <button 
+                    className="nav-link dropdown-toggle arrow-none nav-user px-2" 
+                    onClick={() => setIsOpen(!isOpen)}
+                  >
                       <span className="account-user-avatar">
                         <img
                           src={profilePicture || UserImage}
@@ -51,19 +71,17 @@ const Header = ({ toggleSidebar }) => {
                         <h5 className="my-0">{username}</h5>
                         <h6 className="my-0 fw-normal">{email}</h6>
                       </span>
-                  </a>
-                  <div className="dropdown-menu dropdown-menu-end dropdown-menu-animated profile-dropdown">
-                      <div className="dropdown-header noti-title">
-                          <h6 className="text-overflow m-0">Welcome !</h6>
-                      </div>
-                      <Link to="/myprofile" className="dropdown-item">
+                  </button>
+                  <div className={`custom-dropdown-menu ${isOpen ? 'show' : ''}`}>
+                   
+                      <Link to="/myprofile" className="dropdown-item" onClick={() => setIsOpen(false)}>
                         <i className="mdi mdi-account-circle me-1"></i>
                           <span>My Account</span>
                       </Link>
-                      <a onClick={handleLogout} className="dropdown-item">
+                      <button onClick={() => { handleLogout(); setIsOpen(false); }} className="dropdown-item">
                           <i className="mdi mdi-logout me-1"></i>
                           <span>Logout</span>
-                      </a>
+                      </button>
                   </div>
               </li>
           </ul>    

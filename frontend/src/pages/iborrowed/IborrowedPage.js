@@ -193,11 +193,7 @@ function IborrowedPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4, duration: 0.5 }}
                   >
-                    <motion.div
-                      whileHover={{ scale: 1.05, boxShadow: "0 8px 24px rgba(72, 128, 255, 0.3)" }}
-                      whileTap={{ scale: 0.95 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                    >
+                  
                       <Link 
                         to={activeTab === 'lend' ? "/lend/" : "/home"} 
                         className="btn btn-primary btn-lg start-btn"
@@ -205,7 +201,6 @@ function IborrowedPage() {
                         <i className="fas fa-rocket me-2"></i>
                         {activeTab === 'lend' ? 'Start Lending Now' : 'Get Started Now'}
                       </Link>
-                    </motion.div>
                     <motion.p 
                       className="text-muted mt-3"
                       initial={{ opacity: 0 }}
