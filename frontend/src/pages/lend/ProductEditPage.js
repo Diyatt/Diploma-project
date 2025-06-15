@@ -4,6 +4,7 @@ import api from "../../utils/api";
 import Sidebar from '../../components/Sidebar/Sidebar';
 import Header from '../../components/Header/Header';
 import { Link } from 'react-router-dom';
+import './ProductEditPage.css';
 
 
 function ProductEditPage() {
@@ -134,10 +135,9 @@ function ProductEditPage() {
 	            </div>
 		        <div className="container mt-4">
 		          	<div
-		              className="card-custom bg-white rounded p-25"
+		              className="card-custom bg-white rounded p-25 product-edit-form"
 		              style={{
-		                borderRadius: "15px",
-		                padding: "45px 180px",
+		                borderRadius: "15px"
 		              }}
 		            >
 			          <form onSubmit={handleSubmit} encType="multipart/form-data">

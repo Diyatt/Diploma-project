@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from "react-router-dom";
 import { UserProvider, useUser } from "./contexts/UserContext";
 import LoginPage from "./pages/login/LoginPage";
 import HomePage from "./pages/home/HomePage";
@@ -21,36 +21,53 @@ import ProfillePage from "./pages/profille/ProfillePage";
 import ResetPasswordPage from "./pages/login/ResetPassword";
 import ChatWidget from "./components/ChatWidget/ChatWidget";
 
-function PrivateRoute({ children }) {
-  const { user } = useUser();
-  return user ? children : <Navigate to="/login" />;
+
+
+function AppContent() {
+  const location = useLocation();
+  console.log(location.pathname);
+  
+  const chatBlockRoutes = [
+    "/", "/register", "/verify-email", "/forget-password"
+  ];
+  
+  const shouldBlockChat = chatBlockRoutes.includes(location.pathname) || 
+                         location.pathname.startsWith("/password-reset-confirm/") ||   location.pathname.startsWith("/chat");
+  
+
+  
+  return (
+    <>
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/chat/:chatId" element={<ChatPage />} />
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/Iborrowed" element={<IborrowedPage />} />
+        <Route path="/lend" element={<LendPage />} />
+        <Route path="/lendAdd" element={<LendAddPage />} />
+        <Route path="/edit/:id" element={<ProductEditPage />} />
+        <Route path="/favorites" element={<FavoritesPage />} />
+        <Route path="/mychat" element={<MyChatPages />} />
+        <Route path="/myprofille" element={<ProfillePage />} />
+        <Route path="/notifications" element={<NotificationsPage />} />
+        <Route path="/product/:id" element={<ProductDetailPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/verify-email" element={<EmailVerificationPage />} />
+        <Route path="/forget-password" element={<ForgetPassword />} />
+        <Route path="/category/:id" element={<CategoryProductsPage />} />
+        <Route path="/password-reset-confirm/:token" element={<ResetPasswordPage />} />
+      </Routes>
+      {!shouldBlockChat && <ChatWidget />}
+    </>
+  );
 }
 
 function App() {
   return (
     <Router>
       <UserProvider>
-        <Routes>
-          <Route path="/" element={<LoginPage />} />
-          <Route path="/chat/:chatId" element={<ChatPage />} />
-          <Route path="/home" element={<HomePage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/Iborrowed" element={<IborrowedPage />} />
-          <Route path="/lend" element={<LendPage />} />
-          <Route path="/lendAdd" element={<LendAddPage />} />
-          <Route path="/edit/:id" element={<ProductEditPage />} />
-          <Route path="/favorites" element={<FavoritesPage />} />
-          <Route path="/mychat" element={<MyChatPages />} />
-          <Route path="/myprofile" element={<ProfillePage />} />
-          <Route path="/notifications" element={<NotificationsPage />} />
-          <Route path="/product/:id" element={<ProductDetailPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/verify-email" element={<EmailVerificationPage />} />
-          <Route path="/forget-password" element={<ForgetPassword />} />
-          <Route path="/category/:id" element={<CategoryProductsPage />} />
-          <Route path="/password-reset-confirm/:token" element={<ResetPasswordPage />} />
-        </Routes>
-        <ChatWidget />
+        <AppContent />
       </UserProvider>
     </Router>
   );

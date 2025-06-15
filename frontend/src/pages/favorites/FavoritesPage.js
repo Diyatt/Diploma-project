@@ -11,6 +11,19 @@ function FavoritesPage() {
   const [wishlist, setWishlist] = useState([]);
   const { user } = useUser();
   const [loadingProducts, setLoadingProducts] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Mobile detection
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= 991);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   useEffect(() => {
     const fetchWishlist = async () => {
@@ -32,7 +45,7 @@ function FavoritesPage() {
   return (
     <div className="d-flex">
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(false)} />
-      <div className={`content ${isSidebarOpen ? "collapsed" : ""}`}>
+      <div className={`content ${isSidebarOpen ? "collapsed" : ""}`} style={isMobile ? { marginLeft: 0 } : {}}>
         <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 
         <div className="main" style={{ marginTop: "60px" }}>
@@ -64,6 +77,7 @@ function FavoritesPage() {
                         reviews={item.product.reviewers}
                         liked={true}
                         wishlistId={item.id} // 🟥 МІНДЕТТІ! Бұл - `wishlist` жазбасын өшіру үшін керек
+                        isMobile={isMobile}
                       />
                     ))}
 

@@ -28,6 +28,19 @@ function ProductDetailPage() {
   const fullName = userData?.full_name || userData?.username || "Сіз";
   const [isOpeningChat, setIsOpeningChat] = useState(false);
   const [showPhone, setShowPhone] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Mobile detection
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= 991);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   
 
@@ -183,10 +196,10 @@ function ProductDetailPage() {
     <div className="">
       <div className="d-flex">
         <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(false)} />
-        <div className={`content ${isSidebarOpen ? "collapsed" : ""}`}>
+        <div className={`content ${isSidebarOpen ? "collapsed" : ""}`} style={isMobile ? { marginLeft: 0 } : {}}>
           <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
           <div className="main" style={{ marginTop: "60px" }}>
-            <div className="container">
+            <div className={isMobile ? "container-fluid px-3" : "container"}>
               <div className="favorites-conntent">
                 <div className="favorites-header">
                   <nav aria-label="breadcrumb mt-5">
@@ -204,8 +217,8 @@ function ProductDetailPage() {
                 <div className="favorites-body">
                   <div className="">
 
-                    <div className="row align-items-stretch">
-                     <div className="col-md-6 d-flex justify-content-center align-items-center flex-column">
+                    <div className={`row ${isMobile ? 'g-3' : 'align-items-stretch'}`}>
+                     <div className={`${isMobile ? 'col-12' : 'col-md-6'} d-flex justify-content-center align-items-center flex-column`}>
                         {/* Main image with loading state and quality optimization */}
                         <div className='card-custom bg-white p-3 rounded w-100 shadow-sm' 
                           style={{ 
@@ -306,15 +319,17 @@ function ProductDetailPage() {
                       </div>
 
 
-                      <div className="col-md-6 d-flex">
-                        <div className="card-custom bg-white p-4 w-100 h-100 d-flex flex-column justify-content-between shadow-sm rounded-3">
+                      <div className={`${isMobile ? 'col-12' : 'col-md-6'} d-flex`}>
+                        <div className={`card-custom bg-white ${isMobile ? 'p-3' : 'p-4'} w-100 h-100 d-flex flex-column justify-content-between shadow-sm rounded-3`}>
                           <div>
                             <div className="d-flex justify-content-between align-items-start mb-3">
                               <div>
                                 <h3 className="product-title mb-2" style={{ 
-                                  fontSize: '1.75rem',
+                                  fontSize: isMobile ? '1.5rem' : '1.75rem',
                                   fontWeight: '600',
-                                  color: '#2c3e50'
+                                  color: '#2c3e50',
+                                  wordBreak: 'break-word',
+                                  lineHeight: '1.3'
                                 }}>{product.name}</h3>
                                 <div className="star-rating d-flex align-items-center" style={{ gap: '0.5rem' }}>
                                   <div className="d-flex" style={{ color: '#ffc107' }}>
@@ -359,44 +374,66 @@ function ProductDetailPage() {
 
                             <div className="product-description mb-4">
                               <p className="desc-text" style={{
-                                fontSize: '1rem',
+                                fontSize: isMobile ? '0.9rem' : '1rem',
                                 lineHeight: '1.6',
                                 color: '#4a5568',
-                                marginBottom: '0'
+                                marginBottom: '0',
+                                wordBreak: 'break-word',
+                                overflowWrap: 'break-word'
                               }}>
                                 {product.description}
                               </p>
                             </div>
 
                             <div className="product-details">
-                              <div className="row g-3">
-                                <div className="col-6">
+                              <div className={`row ${isMobile ? 'g-2' : 'g-3'}`}>
+                                <div className={isMobile ? "col-12" : "col-6"}>
                                   <div className="detail-item p-3 rounded-3" style={{ backgroundColor: '#f8f9fa' }}>
                                     <div className="text-muted mb-1" style={{ fontSize: '0.875rem' }}>Category</div>
-                                    <div className="fw-semibold">{product.category_name || "N/A"}</div>
+                                    <div className="fw-semibold" style={{
+                                      wordBreak: 'break-word',
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis',
+                                      whiteSpace: isMobile ? 'normal' : 'nowrap'
+                                    }}>
+                                      {product.category_name || "N/A"}
+                                    </div>
                                   </div>
                                 </div>
-                                <div className="col-6">
+                                <div className={isMobile ? "col-12" : "col-6"}>
                                   <div className="detail-item p-3 rounded-3" style={{ backgroundColor: '#f8f9fa' }}>
                                     <div className="text-muted mb-1" style={{ fontSize: '0.875rem' }}>Quality</div>
                                     <div className="fw-semibold">
-                                      <span className="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">
+                                      <span className="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill" style={{
+                                        wordBreak: 'break-word',
+                                        whiteSpace: 'normal'
+                                      }}>
                                         {product.quality_type}
                                       </span>
                                     </div>
                                   </div>
                                 </div>
-                                <div className="col-6">
+                                <div className={isMobile ? "col-12" : "col-6"}>
                                   <div className="detail-item p-3 rounded-3" style={{ backgroundColor: '#f8f9fa' }}>
                                     <div className="text-muted mb-1" style={{ fontSize: '0.875rem' }}>District</div>
-                                    <div className="fw-semibold">{product.district_name || product.district}</div>
+                                    <div className="fw-semibold" style={{
+                                      wordBreak: 'break-word',
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis',
+                                      whiteSpace: isMobile ? 'normal' : 'nowrap'
+                                    }}>
+                                      {product.district_name || product.district}
+                                    </div>
                                   </div>
                                 </div>
-                                <div className="col-6">
+                                <div className={isMobile ? "col-12" : "col-6"}>
                                   <div className="detail-item p-3 rounded-3" style={{ backgroundColor: '#f8f9fa' }}>
                                     <div className="text-muted mb-1" style={{ fontSize: '0.875rem' }}>Quantity</div>
                                     <div className="fw-semibold">
-                                      <span className="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
+                                      <span className="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill" style={{
+                                        wordBreak: 'break-word',
+                                        whiteSpace: 'normal'
+                                      }}>
                                         {product.piece} available
                                       </span>
                                     </div>
@@ -407,16 +444,19 @@ function ProductDetailPage() {
                           </div>
 
                           <div className="price-section mt-4 pt-3 border-top">
-                            <div className="d-flex align-items-baseline">
+                            <div className={`d-flex ${isMobile ? 'flex-column align-items-start' : 'align-items-baseline'}`}>
                               <span className="price fw-bold" style={{ 
-                                fontSize: '2rem',
+                                fontSize: isMobile ? '1.75rem' : '2rem',
                                 color: '#2c3e50'
                               }}>
                                 {product.price}₸
                               </span>
-                              <small className="text-muted ms-2" style={{ fontSize: '0.9rem' }}>/ per day</small>
+                              <small className={`text-muted ${isMobile ? 'mt-1' : 'ms-2'}`} style={{ fontSize: '0.9rem' }}>/ per day</small>
                             </div>
-                            <div className="text-muted mt-1" style={{ fontSize: '0.875rem' }}>
+                            <div className="text-muted mt-1" style={{ 
+                              fontSize: '0.875rem',
+                              wordBreak: 'break-word'
+                            }}>
                               Flexible rental terms available
                             </div>
                           </div>

@@ -20,6 +20,19 @@ function CategoryProductsPage() {
   const [selectedDistricts, setSelectedDistricts] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Mobile detection
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= 991);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   // 📌 Аудандарды алу
   const fetchDistricts = async () => {
@@ -81,7 +94,7 @@ function CategoryProductsPage() {
     <div className="">
       <div className="d-flex">
         <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(false)} />
-        <div className={`content ${isSidebarOpen ? "collapsed" : ""}`}>
+        <div className={`content ${isSidebarOpen ? "collapsed" : ""}`} style={isMobile ? { marginLeft: 0 } : {}}>
           <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
           <div className="main" style={{ marginTop: "60px" }}>
             <div className="container mt-5">
@@ -97,19 +110,49 @@ function CategoryProductsPage() {
 
               {/* 🔍 Фильтрлер */}
               <div className="filter-section mb-4">
-                <div className="d-flex justify-content-between align-items-center mb-3">
-                  <h4 className="mb-0">Filters</h4>
-                  {(searchTerm || sortOption || selectedDistricts.length > 0) && (
-                    <button
-                      className="btn btn-outline-danger btn-sm"
-                      onClick={resetFilter}
-                    >
-                      <FaTimes className="me-1" /> Clear All
-                    </button>
-                  )}
-                </div>
+                {isMobile ? (
+                  // Mobile Filter Layout
+                  <div>
+                    <div className="d-flex justify-content-between align-items-center mb-3">
+                      <h4 className="mb-0">Filters</h4>
+                      {(searchTerm || sortOption || selectedDistricts.length > 0) && (
+                        <button
+                          style={{
+                            backgroundColor: 'transparent',
+                            border: '1px solid #dc3545',
+                            borderRadius: '12px',
+                            padding: '8px 16px',
+                            color: '#dc3545',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            cursor: 'pointer'
+                          }}
+                          onClick={resetFilter}
+                        >
+                          <FaTimes size={12} /> Clear All
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  // Desktop Filter Layout
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <h4 className="mb-0">Filters</h4>
+                    {(searchTerm || sortOption || selectedDistricts.length > 0) && (
+                      <button
+                        className="btn btn-outline-danger btn-sm"
+                        onClick={resetFilter}
+                      >
+                        <FaTimes className="me-1" /> Clear All
+                      </button>
+                    )}
+                  </div>
+                )}
 
-                <div className="filter-controls d-flex flex-wrap gap-2">
+                <div className={`filter-controls ${isMobile ? 'd-flex flex-column gap-3' : 'd-flex flex-wrap gap-2'}`}>
                   {/* Search Filter */}
                   <div className="search-filter position-relative">
                     <input
@@ -118,19 +161,46 @@ function CategoryProductsPage() {
                       placeholder="Search products..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      style={{ paddingLeft: "35px" }}
+                      style={isMobile ? {
+                        paddingLeft: "45px",
+                        padding: "16px 16px 16px 45px",
+                        borderRadius: "12px",
+                        fontSize: "16px",
+                        border: "1px solid #e0e0e0"
+                      } : { paddingLeft: "35px" }}
                     />
-                    <FaSearch className="position-absolute" style={{ left: "12px", top: "50%", transform: "translateY(-50%)", color: "#6c757d" }} />
+                    <FaSearch className="position-absolute" style={{ 
+                      left: isMobile ? "16px" : "12px", 
+                      top: "50%", 
+                      transform: "translateY(-50%)", 
+                      color: "#6c757d",
+                      fontSize: isMobile ? "16px" : "14px"
+                    }} />
                   </div>
 
                   {/* Sort Filter */}
-                  <div className="dropdown">
+                  <div className="dropdown position-relative">
                     <button
-                      className="btn btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2"
+                      className={isMobile ? "" : "btn btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2"}
+                      style={isMobile ? {
+                        width: '100%',
+                        padding: '16px',
+                        backgroundColor: 'transparent',
+                        border: '1px solid #e0e0e0',
+                        borderRadius: '12px',
+                        fontSize: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        cursor: 'pointer'
+                      } : {}}
                       type="button"
                       onClick={() => setShowFilter(prev => !prev)}
                     >
-                      <FaSort /> Sort
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <FaSort /> Sort
+                      </div>
+                      {isMobile && <span>▼</span>}
                     </button>
                     {showFilter && (
                       <div className="filter-dropdown shadow p-3 bg-white rounded"
@@ -174,16 +244,36 @@ function CategoryProductsPage() {
                   </div>
 
                   {/* District Filter */}
-                  <div className="dropdown">
+                  <div className="dropdown position-relative">
                     <button
-                      className="btn btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2"
+                      className={isMobile ? "" : "btn btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2"}
+                      style={isMobile ? {
+                        width: '100%',
+                        padding: '16px',
+                        backgroundColor: 'transparent',
+                        border: '1px solid #e0e0e0',
+                        borderRadius: '12px',
+                        fontSize: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        cursor: 'pointer'
+                      } : {}}
                       type="button"
                       onClick={() => setShowDropdown(prev => !prev)}
                     >
-                      <FaMapMarkerAlt /> Districts
-                      {selectedDistricts.length > 0 && (
-                        <span className="badge bg-primary ms-1">{selectedDistricts.length}</span>
-                      )}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <FaMapMarkerAlt /> Districts
+                        {selectedDistricts.length > 0 && (
+                          <span className={isMobile ? 
+                            "badge bg-primary" : 
+                            "badge bg-primary ms-1"
+                          } style={isMobile ? { marginLeft: '8px' } : {}}>
+                            {selectedDistricts.length}
+                          </span>
+                        )}
+                      </div>
+                      {isMobile && <span>▼</span>}
                     </button>
                     {showDropdown && (
                       <div className="filter-dropdown shadow p-3 bg-white rounded"
@@ -255,7 +345,7 @@ function CategoryProductsPage() {
                 )}
               </div>
 
-              {/* 📦 Өнімдер */}
+              {/* Products Grid */}
               {loading  ? (
                 <div className="loading-container text-center">
                   <img src={Pereolder} alt="Loading..." />
@@ -278,6 +368,7 @@ function CategoryProductsPage() {
                       reviews={product.reviewers}
                       liked={product.is_favorite} // ✅ қосылды
                       wishlistId={product.wishlist_id || null} // ⚠️ егер `wishlist_id` API-де болса
+                      isMobile={isMobile}
                     />                    
                     ))}
                   </div>
@@ -290,7 +381,6 @@ function CategoryProductsPage() {
                 </>
               )}
 
-              
             </div>
           </div>
         </div>

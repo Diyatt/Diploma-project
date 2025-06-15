@@ -71,8 +71,6 @@
 }
 
 @media (max-width: 768px) {
- 
-  
   .chat-body {
     height: 600px !important;
   }

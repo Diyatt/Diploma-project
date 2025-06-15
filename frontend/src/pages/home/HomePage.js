@@ -72,7 +72,7 @@ function HomePage() {
           <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
           <div style={{ marginTop: "60px" }}>
             <div className="container">
-              <ReusableHeading text="Rent anything in any time, don’t think just do it" />
+              <ReusableHeading text="Rent anything in any time, don't think just do it" />
               <Carousel />
 
               {/* Категориялар */}
@@ -85,7 +85,7 @@ function HomePage() {
                 ) : (
                   categories.map((category) => (
                     <div
-                      className="col-12 col-sm-6 col-md-3 mb-3"
+                      className={`${isMobile ? 'col-4' : 'col-12 col-sm-6 col-md-3'} mb-3`}
                       key={category.id}
                       onClick={() => navigate(`/category/${category.id}`)}
                       style={{ cursor: "pointer" }}
@@ -126,6 +126,7 @@ function HomePage() {
                         reviews={product.reviewers}
                         liked={product.is_favorite} // ✅ қосылды
                         wishlistId={product.wishlist_id || null} // ⚠️ егер `wishlist_id` API-де болса
+                        isMobile={isMobile}
                       />                    
                     ))}
                     </div>
