@@ -215,7 +215,7 @@ function SettingsPage() {
   if (isMobile) {
     // Mobile Layout
     return (
-      <div style={{ 
+      <div style={{
         minHeight: '100vh', 
         backgroundColor: '#f5f5f5'
       }}>
@@ -263,15 +263,36 @@ function SettingsPage() {
             width: '36px',
             height: '36px',
             borderRadius: '50%',
-            backgroundColor: '#4880FF',
+            backgroundColor: profilePicturePreview ? 'transparent' : '#7191ae',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: 'white',
-            fontWeight: '600',
-            fontSize: '14px'
+            overflow: 'hidden',
+            position: 'relative'
           }}>
-            {profileData.full_name?.charAt(0) || 'U'}
+            {profilePicturePreview ? (
+              <img
+                src={profilePicturePreview}
+                alt="Profile"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover'
+                }}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.style.display = 'none';
+                }}
+              />
+            ) : (
+              <span style={{
+                color: 'white',
+                fontWeight: '600',
+                fontSize: '14px'
+              }}>
+                {profileData.full_name?.charAt(0) || 'U'}
+              </span>
+            )}
           </div>
         </div>
 
@@ -568,11 +589,11 @@ function SettingsPage() {
                             borderRadius: '10px'
                           }}
                         />
-                      ) : (
-                        <svg width="40" height="40" fill="#ccc" viewBox="0 0 16 16">
-                          <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                        </svg>
-                      )}
+                       ) : (
+                         <svg width="40" height="40" fill="#ccc" viewBox="0 0 16 16">
+                           <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                         </svg>
+                       )}
                       <input
                         type="file"
                         onChange={handlePictureChange}
