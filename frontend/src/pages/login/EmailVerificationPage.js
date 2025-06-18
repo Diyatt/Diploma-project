@@ -14,20 +14,35 @@ function VerifyEmailPage() {
   const [codeDigits, setCodeDigits] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-
+  const [isExpired, setIsExpired] = useState(false);
   const handleChange = (index, value) => {
     if (/^\d?$/.test(value)) {
       const newDigits = [...codeDigits];
       newDigits[index] = value;
       setCodeDigits(newDigits);
+
+      //autofocus
+      if (value && index < 5) {
+        document.getElementById(`code-input-${index + 1}`).focus();
+      }
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-    setLoading(true);
 
+    if (codeDigits.some(digit => digit === "")) {
+      setError("Please enter the complete 6-digit code");
+      return;
+    }
+
+    if (isExpired) {
+      setError("Code has expired. Please request a new one.");
+      return;
+    }
+
+    setLoading(true);
     const fullCode = codeDigits.join("");
 
     try {
@@ -60,7 +75,10 @@ function VerifyEmailPage() {
       navigate("/home");
     } catch (err) {
       console.error("Verification error:", err);
-      setError("Code is incorrect or expired!");
+      const errorMessage = err.response?.data?.detail ||
+                         "Code is incorrect or expired!";
+      //setError(errorMessage);
+      setIsExpired(errorMessage.includes("expired"));
       setCodeDigits(["", "", "", "", "", ""]);
     } finally {
       setLoading(false);
@@ -74,9 +92,10 @@ function VerifyEmailPage() {
   try {
     await api.post("/auth/resend-verification/", { email });
     setCodeDigits(["", "", "", "", "", ""]);
-    alert("Код повторно отправлен на почту!");
+    setIsExpired(false);
+    alert("Verification code has been resent to your email!");
   } catch (err) {
-    setError("Не удалось повторно отправить код.");
+    setError("Failed to resend code. Please try again.");
   } finally {
     setLoading(false);
   }
@@ -98,20 +117,25 @@ function VerifyEmailPage() {
                   />
                   <p className="mb-4">
                     We sent a one-time code to your email address.
+                  <br/>
+                    <strong>{email}</strong>
+
                   </p>
 
                   <form onSubmit={handleSubmit}>
                     <div className="d-flex justify-content-center mb-4 gap-2">
                       {codeDigits.map((digit, index) => (
                         <input
-                          key={index}
-                          type="text"
-                          maxLength="1"
-                          className="form-control text-center"
-                          style={{ width: "50px", fontSize: "24px" }}
-                          value={digit}
-                          onChange={(e) => handleChange(index, e.target.value)}
-                          required
+                            id={`code-input-${index}`}
+                            onFocus={(e) => e.target.select()}
+                            key={index}
+                            type="text"
+                            maxLength="1"
+                            className={'form-control text-center ${ error ? "is-invalid" : ""}'}
+                            style={{ width: "50px", fontSize: "24px" }}
+                            value={digit}
+                            onChange={(e) => handleChange(index, e.target.value)}
+                            required
                         />
                       ))}
                     </div>
@@ -120,7 +144,7 @@ function VerifyEmailPage() {
 
                     <button
                       type="submit"
-                      className="btn btn-primary"
+                      className="btn btn-primary || isExpired"
                       disabled={loading}
                     >
                       {loading ? "Checking..." : "Submit"}
