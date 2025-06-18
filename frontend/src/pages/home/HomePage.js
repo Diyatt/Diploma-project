@@ -73,7 +73,7 @@ function HomePage() {
           <div style={{ marginTop: "60px" }}>
             <div className="container">
               <ReusableHeading text="Rent anything in any time, don't think just do it" />
-              <Carousel />
+              <Carousel isMobile={isMobile} />
 
               {/* Категориялар */}
               <ReusableHeading text="Category" />

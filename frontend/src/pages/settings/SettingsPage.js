@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Header from "../../components/Header/Header";
 import api from "../../utils/api";
+import { useUser } from "../../contexts/UserContext";
+import UserImage from "../../assets/img/defaultProfile.png";
 
 function SettingsPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -27,6 +29,10 @@ function SettingsPage() {
   const [regions, setRegions] = useState([]);
   const [allDistricts, setAllDistricts] = useState([]);
   const [districts, setDistricts] = useState([]);
+  const { user } = useUser();
+
+
+  const profilePicture1 = user?.profile_picture || "/defaultProfile.png";
 
   // Mobile detection
   useEffect(() => {
@@ -271,7 +277,17 @@ function SettingsPage() {
             fontWeight: '600',
             fontSize: '14px'
           }}>
-            {profileData.full_name?.charAt(0) || 'U'}
+            <img
+                          src={profilePicture1 || UserImage}
+                          alt="user-image"
+                          width="32"
+                          height="32"
+                          className="rounded-circle"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = UserImage;
+                          }}
+                        />
           </div>
         </div>
 
@@ -795,60 +811,7 @@ function SettingsPage() {
         backgroundColor: '#f5f5f5'
       }}>
         {/* Mobile Header */}
-        <div style={{
-          backgroundColor: '#fff',
-          padding: '12px 16px',
-          borderBottom: '1px solid #e0e0e0',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-        }}>
-          {/* Hamburger Menu */}
-          <button 
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            style={{
-              background: 'none',
-              border: 'none',
-              padding: '8px',
-              cursor: 'pointer'
-            }}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="3" y1="6" x2="21" y2="6"></line>
-              <line x1="3" y1="12" x2="21" y2="12"></line>
-              <line x1="3" y1="18" x2="21" y2="18"></line>
-            </svg>
-          </button>
-
-          {/* Title */}
-          <h5 style={{ 
-            margin: 0, 
-            fontSize: '18px', 
-            fontWeight: '600',
-            color: '#2d3748',
-            flex: 1,
-            textAlign: 'center'
-          }}>
-            Settings
-          </h5>
-
-          {/* User Avatar */}
-          <div style={{
-            width: '36px',
-            height: '36px',
-            borderRadius: '50%',
-            backgroundColor: '#4880FF',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'white',
-            fontWeight: '600',
-            fontSize: '14px'
-          }}>
-            {profileData.full_name?.charAt(0) || 'U'}
-          </div>
-        </div>
+        <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 
         {/* Mobile Tabs */}
         <div style={{

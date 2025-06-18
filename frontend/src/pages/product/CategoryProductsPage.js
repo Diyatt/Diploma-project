@@ -374,8 +374,19 @@ function CategoryProductsPage() {
                   </div>
 
                   {products.length === 0 && (
-                    <div className="alert alert-warning mt-4">
-                      Таңдалған фильтр бойынша өнім табылмады.
+                    <div className="text-center py-5">
+                      <div className="alert alert-light border shadow-sm" role="alert">
+                        <h5 className="alert-heading mb-3">No products found</h5>
+                        <p className="mb-3">We couldn't find any products matching your current filters.</p>
+                        <hr />
+                        <p className="mb-0">Try these suggestions:</p>
+                        <ul className="text-start mt-2 mb-0">
+                          <li>Clear your filters using the "Clear All" button</li>
+                          <li>Try different search terms</li>
+                          <li>Select different districts</li>
+                          <li>Check back later for new products</li>
+                        </ul>
+                      </div>
                     </div>
                   )}
                 </>
