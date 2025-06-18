@@ -15,6 +15,8 @@ function ChatPage() {
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const currentUserId = JSON.parse(localStorage.getItem("userData"))?.id;
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState(null);
 
   // Mobile detection
   useEffect(() => {
@@ -30,65 +32,73 @@ function ChatPage() {
 
   // 1. Алғашқы хабарламалар мен чат қолданушысын жүктеу
   useEffect(() => {
+    let isMounted = true;
     const fetchChat = async () => {
       try {
         const [msgRes, chatRes] = await Promise.all([
           api.get(`/chats/${chatId}/messages/`),
           api.get(`/chats/${chatId}/`)
         ]);
+        if (!isMounted) return;
         setMessages(msgRes.data);
 
         const chat = chatRes.data;
         const otherUser = chat.user1.id === currentUserId ? chat.user2 : chat.user1;
         setChatUser(otherUser);
       } catch (err) {
-        console.error("Жүктеу қатесі:", err);
+        if (isMounted) console.error("Жүктеу қатесі:", err);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
     fetchChat();
+    return () => { isMounted = false; };
   }, [chatId]);
 
   // 2. Автоматты түрде 3 секунд сайын жаңарту
   useEffect(() => {
+    let isMounted = true;
     const interval = setInterval(() => {
       api.get(`/chats/${chatId}/messages/`).then((res) => {
-        setMessages(res.data);
+        if (isMounted) setMessages(res.data);
       });
     }, 3000);
 
-    return () => clearInterval(interval);
+    return () => { isMounted = false; clearInterval(interval); };
   }, [chatId]);
 
   // 3. Хабарлама жіберу (текст және сурет)
   const handleSend = async () => {
     if (!content.trim() && !selectedImage) return;
-
+    setSending(true);
+    setSendError(null);
     const formData = new FormData();
     if (content.trim()) formData.append("content", content);
     if (selectedImage) formData.append("image", selectedImage);
-
-    await api.post(`/chats/${chatId}/messages/`, formData, {
-      headers: { "Content-Type": "multipart/form-data" }
-    });
-
-    setContent("");         // ✅ Текстті тазалау
-    setSelectedImage(null); // ✅ Файлды тазалау
-
-    // 🔄 Хабарламаларды жаңарту
-    const res = await api.get(`/chats/${chatId}/messages/`);
-    setMessages(res.data);
+    try {
+      await api.post(`/chats/${chatId}/messages/`, formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      setContent("");         // ✅ Текстті тазалау
+      setSelectedImage(null); // ✅ Файлды тазалау
+      // 🔄 Хабарламаларды жаңарту
+      const res = await api.get(`/chats/${chatId}/messages/`);
+      setMessages(res.data);
+    } catch (err) {
+      setSendError("Failed to send message. Please try again.");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
     <div className="d-flex">
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(false)} />
-      <div className={`${isSidebarOpen ? "collapsed" : ""}`} style={isMobile ? { marginLeft: 0 } : {width: '100%', marginLeft: '250px'}}>
+      <div className={`content ${isSidebarOpen ? "collapsed" : ""}`} style={isMobile ? { marginLeft: 0 } : {}}>
         <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 
-        <div className="main" style={{ marginTop: "60px" }}>
+        <div className="main" style={{ marginTop: "48px", marginLeft: "-20px", marginRight: "-18px" }}>
           <div style={{ 
             height: 'calc(100vh - 60px)', 
             display: 'flex',
@@ -165,82 +175,83 @@ function ChatPage() {
                   <img src={Pereolder} alt="Loading..." width={80} />
                 </div>
               ) : (
-                messages.map((msg) => {
-                  const isOwn = msg.sender?.id === currentUserId;
-                  
-                  return (
-                    <div key={msg.id} style={{
-                      display: 'flex',
-                      justifyContent: isOwn ? 'flex-end' : 'flex-start',
-                      marginBottom: '8px'
-                    }}>
-                      <div style={{
-                        maxWidth: '70%',
-                        minWidth: '120px',
-                        padding: '12px 18px',
-                        borderRadius: '20px',
-                        backgroundColor: isOwn ? '#4880FF' : '#fff',
-                        color: isOwn ? '#fff' : '#2d3748',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                        borderBottomRightRadius: isOwn ? '6px' : '20px',
-                        borderBottomLeftRadius: !isOwn ? '6px' : '20px',
-                        position: 'relative'
+                <>
+                  {messages.map((msg) => {
+                    const isOwn = msg.sender?.id === currentUserId;
+                    return (
+                      <div key={msg.id} style={{
+                        display: 'flex',
+                        justifyContent: isOwn ? 'flex-end' : 'flex-start',
+                        marginBottom: '8px'
                       }}>
-                        {msg.content && (
-                          <div style={{ 
-                            fontSize: '16px',
-                            lineHeight: '1.5',
-                            wordWrap: 'break-word',
-                            marginBottom: msg.url ? '8px' : '0'
-                          }}>
-                            {msg.content}
-                          </div>
-                        )}
-                        {msg.url && (
-                          <div style={{ marginTop: msg.content ? '8px' : '0' }}>
-                            <img 
-                              src={msg.url} 
-                              alt="image" 
-                              style={{ 
-                                maxWidth: '100%', 
-                                borderRadius: '12px',
-                                height: 'auto',
-                                maxHeight: '300px',
-                                objectFit: 'cover'
-                              }} 
-                            />
-                          </div>
-                        )}
                         <div style={{
-                          fontSize: '12px',
-                          opacity: 0.8,
-                          marginTop: '6px',
-                          textAlign: 'right',
-                          display: 'flex',
-                          justifyContent: 'flex-end',
-                          alignItems: 'center',
-                          gap: '4px'
+                          maxWidth: '70%',
+                          minWidth: '120px',
+                          padding: '12px 18px',
+                          borderRadius: '20px',
+                          backgroundColor: isOwn ? '#4880FF' : '#fff',
+                          color: isOwn ? '#fff' : '#2d3748',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                          borderBottomRightRadius: isOwn ? '6px' : '20px',
+                          borderBottomLeftRadius: !isOwn ? '6px' : '20px',
+                          position: 'relative'
                         }}>
-                          <span>
-                            {new Date(msg.sent_at).toLocaleTimeString('en-GB', { 
-                              hour: '2-digit', 
-                              minute: '2-digit',
-                              hour12: false 
-                            })}
-                          </span>
-                          {isOwn && (
-                            <span style={{ 
-                              fontSize: '14px',
-                              color: msg.is_read ? '#90EE90' : 'rgba(255,255,255,0.7)'
+                          {msg.content && (
+                            <div style={{ 
+                              fontSize: '16px',
+                              lineHeight: '1.5',
+                              wordWrap: 'break-word',
+                              marginBottom: msg.url ? '8px' : '0'
                             }}>
-                              {msg.is_read ? "✓✓" : "✓"}
-                            </span>
+                              {msg.content}
+                            </div>
                           )}
+                          {msg.url && (
+                            <div style={{ marginTop: msg.content ? '8px' : '0' }}>
+                              <img 
+                                src={msg.url} 
+                                alt="image" 
+                                style={{ 
+                                  maxWidth: '100%', 
+                                  borderRadius: '12px',
+                                  height: 'auto',
+                                  maxHeight: '300px',
+                                  objectFit: 'cover'
+                                }} 
+                              />
+                            </div>
+                          )}
+                          <div style={{
+                            fontSize: '12px',
+                            opacity: 0.8,
+                            marginTop: '6px',
+                            textAlign: 'right',
+                            display: 'flex',
+                            justifyContent: 'flex-end',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}>
+                            <span>
+                              {new Date(msg.sent_at).toLocaleTimeString('en-GB', { 
+                                hour: '2-digit', 
+                                minute: '2-digit',
+                                hour12: false 
+                              })}
+                            </span>
+                            {isOwn && (
+                              <span style={{ 
+                                fontSize: '14px',
+                                color: msg.is_read ? '#90EE90' : 'rgba(255,255,255,0.7)'
+                              }}>
+                                {msg.is_read ? "✓✓" : "✓"}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })
+                    );
+                  })}
+                </>
               )}
             </div>
 
@@ -265,7 +276,7 @@ function ChatPage() {
                   placeholder="Type a message..."
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                   style={{
                     width: '100%',
                     padding: '14px 20px',
@@ -284,8 +295,49 @@ function ChatPage() {
                     e.target.style.borderColor = '#e0e0e0';
                     e.target.style.boxShadow = 'none';
                   }}
+                  disabled={sending}
                 />
               </div>
+
+              {/* Image Preview */}
+              {selectedImage && (
+                <div style={{ position: 'relative', marginRight: '8px' }}>
+                  <img
+                    src={URL.createObjectURL(selectedImage)}
+                    alt="preview"
+                    style={{
+                      width: 48,
+                      height: 48,
+                      objectFit: 'cover',
+                      borderRadius: '8px',
+                      border: '1px solid #e0e0e0',
+                    }}
+                  />
+                  <button
+                    onClick={() => setSelectedImage(null)}
+                    style={{
+                      position: 'absolute',
+                      top: -8,
+                      right: -8,
+                      background: '#fff',
+                      border: '1px solid #ccc',
+                      borderRadius: '50%',
+                      width: 20,
+                      height: 20,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontSize: 12,
+                      color: '#888',
+                      zIndex: 2
+                    }}
+                    title="Remove image"
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
 
               {/* Attachment Button */}
               <input
@@ -294,6 +346,7 @@ function ChatPage() {
                 accept="image/*"
                 style={{ display: "none" }}
                 onChange={(e) => setSelectedImage(e.target.files[0])}
+                disabled={sending}
               />
               <label 
                 htmlFor="file-upload" 
@@ -327,28 +380,28 @@ function ChatPage() {
               {/* Send Button */}
               <button 
                 onClick={handleSend}
-                disabled={!content.trim() && !selectedImage}
+                disabled={(!content.trim() && !selectedImage) || sending}
                 style={{
                   width: '48px',
                   height: '48px',
                   borderRadius: '50%',
-                  backgroundColor: (!content.trim() && !selectedImage) ? '#ccc' : '#4880FF',
+                  backgroundColor: (!content.trim() && !selectedImage) || sending ? '#ccc' : '#4880FF',
                   border: 'none',
                   color: 'white',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  cursor: (!content.trim() && !selectedImage) ? 'not-allowed' : 'pointer',
+                  cursor: (!content.trim() && !selectedImage) || sending ? 'not-allowed' : 'pointer',
                   transition: 'background-color 0.2s, transform 0.1s'
                 }}
                 onMouseOver={(e) => {
-                  if (content.trim() || selectedImage) {
+                  if ((content.trim() || selectedImage) && !sending) {
                     e.target.style.backgroundColor = '#3366CC';
                     e.target.style.transform = 'scale(1.05)';
                   }
                 }}
                 onMouseOut={(e) => {
-                  if (content.trim() || selectedImage) {
+                  if ((content.trim() || selectedImage) && !sending) {
                     e.target.style.backgroundColor = '#4880FF';
                     e.target.style.transform = 'scale(1)';
                   }
@@ -358,6 +411,9 @@ function ChatPage() {
                   <path d="M15.854.146a.5.5 0 0 1 .11.54L13.026 8.5l2.938 7.814a.5.5 0 0 1-.11.54.5.5 0 0 1-.54.11L8 13.026.146 15.964a.5.5 0 0 1-.54-.11.5.5 0 0 1-.11-.54L2.974 7.5.036-.314a.5.5 0 0 1 .11-.54.5.5 0 0 1 .54-.11L8 2.974 15.314.036a.5.5 0 0 1 .54.11z"/>
                 </svg>
               </button>
+              {sendError && (
+                <span style={{ color: 'red', marginLeft: 8, fontSize: 14 }}>{sendError}</span>
+              )}
             </div>
           </div>
         </div>

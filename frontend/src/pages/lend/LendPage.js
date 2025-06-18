@@ -22,11 +22,24 @@ const DeleteIcon = () => (
     <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
   </svg>
 );
+
+// Simple Toast Notification Component
+function Toast({ message, type, onClose }) {
+  if (!message) return null;
+  return (
+    <div className={`toast-notification toast-${type}`} onClick={onClose}>
+      {message}
+      <span className="toast-close">&times;</span>
+    </div>
+  );
+}
+
 function LendPage() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [products, setProducts] = useState([]);
     const [loadingLendPage, setLoadingLendPage] = useState(true);
     const navigate = useNavigate();
+    const [toast, setToast] = useState({ message: '', type: '' });
 
     useEffect(() => {
       setLoadingLendPage(true);
@@ -58,22 +71,28 @@ function LendPage() {
       navigate(`/edit/${product.id}`);
     };
 
-    const handleDelete = async (id) => {
-      const confirmDelete = window.confirm("Бұл өнімді жоюға сенімдісіз бе?");
-      if (!confirmDelete) return;
+    const showToast = (message, type = 'success') => {
+      setToast({ message, type });
+      setTimeout(() => setToast({ message: '', type: '' }), 3000);
+    };
 
+    const handleDelete = async (id) => {
+      const confirmed = window.confirm('Are you sure you want to delete this product?');
+      if (!confirmed) return;
       try {
         await api.delete(`/products/${id}/delete/`);
         setProducts(products.filter(product => product.id !== id));
-        alert("Өнім сәтті жойылды!");
+        showToast("Product deleted successfully!", "success");
       } catch (err) {
-        console.error("Жою қатесі:", err);
-        alert("Жою сәтсіз аяқталды.");
+        console.error("Delete error:", err);
+        showToast("Failed to delete product.", "error");
       }
     };
 
     return (
       <div className="d-flex">
+        {/* Toast Notification */}
+        <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: '' })} />
         <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(false)} />
 
         <div className={`content ${isSidebarOpen ? "collapsed" : ""}`}>
