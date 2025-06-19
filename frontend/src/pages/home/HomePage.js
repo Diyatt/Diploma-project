@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import api from "../../utils/api";
-import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Header from "../../components/Header/Header";
 import Carousel from "../../components/Carousel/Carousel";
@@ -12,6 +11,8 @@ import Ecommerce from "../../assets/img/E-commerce.png";
 import Pereolder  from "../../assets/img/Animation.gif";
 import { useUser } from "../../contexts/UserContext";
 import UserImage from "../../assets/img/defaultProfile.png";
+import { useNavigate } from "react-router-dom";
+
 
 function HomePage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -165,7 +166,7 @@ function HomePage() {
                   }}
                   onClick={() => {
                     setIsAvatarMenuOpen(false);
-                    navigate('/settings');
+                    navigate('/myprofile');
                   }}
                 >
                   My Account
@@ -184,7 +185,7 @@ function HomePage() {
                   onClick={() => {
                     setIsAvatarMenuOpen(false);
                     logout();
-                    navigate('/login');
+                    navigate('/');
                   }}
                 >
                   Logout
@@ -193,6 +194,32 @@ function HomePage() {
             )}
           </div>
         </div>
+      )}
+      {isMobile && isSidebarOpen && (
+        <>
+          <div 
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              zIndex: 998
+            }}
+            onClick={() => setIsSidebarOpen(false)}
+          />
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            bottom: 0,
+            width: '280px',
+            zIndex: 999
+          }}>
+            <Sidebar isOpen={true} toggleSidebar={() => setIsSidebarOpen(false)} />
+          </div>
+        </>
       )}
       <div className="d-flex">
         <Sidebar  isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(false)} />

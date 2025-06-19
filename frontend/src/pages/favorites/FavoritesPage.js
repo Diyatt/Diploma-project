@@ -6,6 +6,7 @@ import api from "../../utils/api"; // 🔹 Axios instance
 import { useUser } from "../../contexts/UserContext"; // 🔹 user context
 import Pereolder  from "../../assets/img/Animation.gif";
 import UserImage from "../../assets/img/defaultProfile.png";
+import { useNavigate } from 'react-router-dom';
 
 
 function FavoritesPage() {
@@ -16,6 +17,10 @@ function FavoritesPage() {
   const [isMobile, setIsMobile] = useState(false);
   const profilePicture1 = user?.profile_picture || UserImage;
   const [isAvatarMenuOpen, setIsAvatarMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const logout = () => {
+    localStorage.removeItem('userData');
+  };
 
 
 
@@ -88,7 +93,10 @@ function FavoritesPage() {
             fontWeight: '600',
             color: '#2d3748',
             flex: 1,
-            textAlign: 'center'
+            textAlign: 'center',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap'
           }}>
             Favorites
           </h5>
@@ -106,7 +114,8 @@ function FavoritesPage() {
                 color: 'white',
                 fontWeight: '600',
                 fontSize: '14px',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                overflow: 'hidden'
               }}
               onClick={() => setIsAvatarMenuOpen((prev) => !prev)}
             >
@@ -116,6 +125,7 @@ function FavoritesPage() {
                 width="32"
                 height="32"
                 className="rounded-circle"
+                style={{ objectFit: 'cover', width: '32px', height: '32px' }}
                 onError={e => { e.target.onerror = null; e.target.src = UserImage; }}
               />
             </div>
@@ -146,7 +156,7 @@ function FavoritesPage() {
                   }}
                   onClick={() => {
                     setIsAvatarMenuOpen(false);
-                    navigate('/settings');
+                    navigate('/myprofile');
                   }}
                 >
                   My Account
@@ -175,7 +185,7 @@ function FavoritesPage() {
           </div>
         </div>
       )}
-      {isSidebarOpen && (
+      {isMobile && isSidebarOpen && (
         <>
           <div 
             style={{
@@ -201,57 +211,58 @@ function FavoritesPage() {
           </div>
         </>
       )}
-    <div className="d-flex">
-      <div className={`content ${isSidebarOpen ? "collapsed" : ""}`} style={isMobile ? { marginLeft: 0 } : {}}>
-        {!isMobile && <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />}
-        <div className="main" style={{ marginTop: isMobile ? "-10px" : "50px" }}>
-          <div className="container">
-            <div className="favorites-conntent">
-              <div className="favorites-header mb-3">
-                {!isMobile && <h4>Favorites</h4>}
-              </div>
+      <div className="d-flex">
+        {!isMobile && <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(false)} />}
+        <div className={`content ${isSidebarOpen ? "collapsed" : ""}`} style={isMobile ? { marginLeft: 0 } : {}}>
+          {!isMobile && <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />}
+          <div className="main" style={{ marginTop: isMobile ? "-10px" : "50px" }}>
+            <div className="container">
+              <div className="favorites-conntent">
+                <div className="favorites-header mb-3">
+                  {!isMobile && <h4>Favorites</h4>}
+                </div>
 
-              <div className="product-body">
-                {loadingProducts ? (
-                  <div className="loading-container text-center">
-                    <img src={Pereolder} alt="Loading..." />
-                  </div>
-                ) : (
-                  <div 
-                    className="row"
-                    style={isMobile ? { gap: 0, marginBottom: 0 } : {}}
-                  >
-                    {wishlist.map((item) => (
-                      <ProductCard
-                        key={item.id}
-                        id={item.product.id}
-                        title={item.product.name}
-                        price={item.product.price}
-                        images={
-                          item.product.images && item.product.images.length > 0
-                            ? item.product.images.map((img) => img.url)
-                            : []
-                        }
-                        rating={Math.round(item.product.average_rating)}
-                        reviews={item.product.reviewers}
-                        liked={true}
-                        wishlistId={item.id} // 🟥 МІНДЕТТІ! Бұл - `wishlist` жазбасын өшіру үшін керек
-                        isMobile={isMobile}
-                      />
-                    ))}
+                <div className="product-body">
+                  {loadingProducts ? (
+                    <div className="loading-container text-center">
+                      <img src={Pereolder} alt="Loading..." />
+                    </div>
+                  ) : (
+                    <div 
+                      className="row"
+                      style={isMobile ? { gap: 0, marginBottom: 0 } : {}}
+                    >
+                      {wishlist.map((item) => (
+                        <ProductCard
+                          key={item.id}
+                          id={item.product.id}
+                          title={item.product.name}
+                          price={item.product.price}
+                          images={
+                            item.product.images && item.product.images.length > 0
+                              ? item.product.images.map((img) => img.url)
+                              : []
+                          }
+                          rating={Math.round(item.product.average_rating)}
+                          reviews={item.product.reviewers}
+                          liked={true}
+                          wishlistId={item.id} // 🟥 МІНДЕТТІ! Бұл - `wishlist` жазбасын өшіру үшін керек
+                          isMobile={isMobile}
+                        />
+                      ))}
 
-                    {/* Егер тізім бос болса */}
-                    {wishlist.length === 0 && (
-                      <p className="text-muted">Сіздің таңдаулыларыңыз бос.</p>
-                    )}
-                  </div>
-                )}
+                      {/* Егер тізім бос болса */}
+                      {wishlist.length === 0 && (
+                        <p className="text-muted">Сіздің таңдаулыларыңыз бос.</p>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </div> 
-    </div>
+        </div> 
+      </div>
     </div>
   );
 }

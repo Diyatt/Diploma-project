@@ -7,12 +7,19 @@ import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './ProductEditPage.css';
+import { useUser } from "../../contexts/UserContext";
+import UserImage from "../../assets/img/defaultProfile.png";
 
 function ProductEditPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isAvatarMenuOpen, setIsAvatarMenuOpen] = useState(false);
+  const { user, logout } = useUser();
+  const profilePicture = user?.profile_picture || UserImage;
 
   const [formData, setFormData] = useState({
     name: "", category: "", region: "", district: "", piece: 1,
@@ -24,7 +31,16 @@ function ProductEditPage() {
   const [regions, setRegions] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [qualities, setQualities] = useState([]);
-  const [imageInputs, setImageInputs] = useState([null, null, null, null]); // жаңаларын сақтау
+  const [imageInputs, setImageInputs] = useState([null, null, null, null]);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= 991);
+    };
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   useEffect(() => {
     async function fetchData() {
@@ -112,7 +128,6 @@ function ProductEditPage() {
 
     try {
       await api.put(`/products/${id}/`, data);
-      
       // Upload new images
       const uploadPromises = imageInputs
         .filter(file => file)
@@ -122,9 +137,7 @@ function ProductEditPage() {
           imgData.append("image", file);
           return api.post("/product-images/upload/", imgData);
         });
-
       await Promise.all(uploadPromises);
-      
       toast.success("Product updated successfully!");
       navigate("/lend");
     } catch (error) {
@@ -145,6 +158,375 @@ function ProductEditPage() {
     );
   }
 
+  // MOBILE LAYOUT
+  if (isMobile) {
+    return (
+      <div style={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
+        {/* Mobile Header */}
+        <div style={{
+          backgroundColor: '#fff',
+          padding: '12px 16px',
+          borderBottom: '1px solid #e0e0e0',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        }}>
+          {/* Hamburger Menu */}
+          <button 
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: '8px',
+              cursor: 'pointer'
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+
+          {/* Title */}
+          <h5 style={{ 
+            margin: 0, 
+            fontSize: '18px', 
+            fontWeight: '600',
+            color: '#2d3748',
+            flex: 1,
+            textAlign: 'center'
+          }}>
+            Edit Product
+          </h5>
+
+          {/* User Avatar */}
+          <div style={{ position: 'relative' }}>
+            <div
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                backgroundColor: '#4880FF',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                fontWeight: '600',
+                fontSize: '14px',
+                cursor: 'pointer'
+              }}
+              onClick={() => setIsAvatarMenuOpen((prev) => !prev)}
+            >
+              <img
+                src={profilePicture || UserImage}
+                alt="user-image"
+                width="32"
+                height="32"
+                className="rounded-circle"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = UserImage;
+                }}
+              />
+            </div>
+            {isAvatarMenuOpen && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '110%',
+                  right: 0,
+                  background: '#fff',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                  borderRadius: '10px',
+                  zIndex: 1000,
+                  minWidth: '140px',
+                  padding: '8px 0'
+                }}
+              >
+                <button
+                  style={{
+                    width: '100%',
+                    background: 'none',
+                    border: 'none',
+                    padding: '10px 16px',
+                    textAlign: 'left',
+                    fontSize: '15px',
+                    color: '#2d3748',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => {
+                    setIsAvatarMenuOpen(false);
+                    navigate('/myprofile');
+                  }}
+                >
+                  My Account
+                </button>
+                <button
+                  style={{
+                    width: '100%',
+                    background: 'none',
+                    border: 'none',
+                    padding: '10px 16px',
+                    textAlign: 'left',
+                    fontSize: '15px',
+                    color: '#dc3545',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => {
+                    setIsAvatarMenuOpen(false);
+                    logout();
+                    navigate('/');
+                  }}
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div style={{ marginTop: '16px' }}>
+          <div className="container">
+            <div className="favorites-conntent">
+              <div className="favorites-header">
+                <nav aria-label="breadcrumb mt-5">
+                  <ol className="breadcrumb">
+                    <li className="breadcrumb-item"><Link to="/lend">Lend</Link></li>
+                    <li className="breadcrumb-item active" aria-current="page">{formData.name || "Loading..."}</li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+            <div className="container mt-4">
+              <div
+                className="card-custom bg-white rounded p-25 product-edit-form"
+                style={{
+                  borderRadius: "15px"
+                }}
+              >
+                <form onSubmit={handleSubmit} encType="multipart/form-data">
+                  {/* Existing Images */}
+                  <label className="form-label">Current Images:</label>
+                  <div className="row mb-4">
+                    {images.map((img, index) => (
+                      <div key={img.id} className="col text-center image-upload">
+                        <img 
+                          src={img.url} 
+                          alt={`Uploaded ${index}`} 
+                          style={{ width: '100px', height: '100px', objectFit: 'cover' }} 
+                          className="img-thumbnail"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteImage(img.id)}
+                          className="btn btn-sm btn-danger mt-2"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* New Images */}
+                  <label className="form-label">Add New Images:</label>
+                  <div className="row mb-4">
+                    {[0, 1, 2, 3].map((i) => (
+                      <div className="col text-center image-upload" key={i}>
+                        <div className="upload-placeholder">
+                          {imageInputs[i] ? (
+                            <img 
+                              src={URL.createObjectURL(imageInputs[i])} 
+                              alt="Preview" 
+                              style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                              className="img-thumbnail"
+                            />
+                          ) : (
+                            <span>📷</span>
+                          )}
+                        </div>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleNewImageChange(e, i)}
+                          className="form-control d-none"
+                          id={`new-image-${i}`}
+                        />
+                        <label htmlFor={`new-image-${i}`} className="btn btn-outline-primary btn-sm mt-2">
+                          {imageInputs[i] ? "Change Image" : "Upload Image"}
+                        </label>
+                        {imageInputs[i] && (
+                          <div className="small mt-1 text-success">{imageInputs[i].name}</div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Rest of the form remains the same */}
+                  <div className="row mb-3">
+                    <div className="col-md-6">
+                      <label className="form-label">Name</label>
+                      <input
+                        type="text"
+                        name="name"
+                        className="form-control form-control-new"
+                        value={formData.name}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label">Region</label>
+                      <select
+                        name="region"
+                        className="form-select form-control-new"
+                        value={formData.region}
+                        onChange={handleChange}
+                      >
+                        <option value="">Select</option>
+                        {regions.map((r) => (
+                          <option key={r.id} value={r.id}>{r.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="row mb-3">
+                    <div className="col-md-6">
+                      <label className="form-label">Category</label>
+                      <select
+                        name="category"
+                        className="form-select form-control-new"
+                        value={formData.category}
+                        onChange={handleChange}
+                      >
+                        <option value="">Select</option>
+                        {categories.map((c) => (
+                          <option key={c.id} value={c.id}>{c.category_name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label">District</label>
+                      <select
+                        name="district"
+                        className="form-select form-control-new"
+                        value={formData.district}
+                        onChange={handleChange}
+                      >
+                        <option value="">Select</option>
+                        {districts.map((d) => (
+                          <option key={d.id} value={d.id}>{d.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="row mb-3">
+                    <div className="col-md-6">
+                      <label className="form-label">Piece</label>
+                      <input
+                        type="number"
+                        name="piece"
+                        className="form-control form-control-new"
+                        value={formData.piece}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label">Price</label>
+                      <input
+                        type="number"
+                        name="price"
+                        className="form-control form-control-new"
+                        value={formData.price}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="row mb-3">
+                    <div className="col-md-6">
+                      <label className="form-label">Quality</label>
+                      <select
+                        name="quality"
+                        className="form-select form-control-new"
+                        value={formData.quality}
+                        onChange={handleChange}
+                      >
+                        <option value="">Select</option>
+                        {qualities.map((q) => (
+                          <option key={q.id} value={q.id}>{q.quality_type}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label">Description</label>
+                      <textarea
+                        name="description"
+                        className="form-control form-control-new"
+                        rows="4"
+                        value={formData.description}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="text-center">
+                    <button 
+                      type="submit" 
+                      className="start-btn"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                          Saving...
+                        </>
+                      ) : (
+                        'Save Changes'
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Sidebar Overlay */}
+        {isSidebarOpen && (
+          <>
+            <div 
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0,0,0,0.5)',
+                zIndex: 998
+              }}
+              onClick={() => setIsSidebarOpen(false)}
+            />
+            <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              bottom: 0,
+              width: '280px',
+              zIndex: 999
+            }}>
+              <Sidebar isOpen={true} toggleSidebar={() => setIsSidebarOpen(false)} />
+            </div>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  // DESKTOP LAYOUT
   return (
     <div className="d-flex">
       <Sidebar isOpen={false} toggleSidebar={() => {}} />
