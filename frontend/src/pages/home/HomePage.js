@@ -10,6 +10,8 @@ import Footer from "../../components/footer/Footer";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import Ecommerce from "../../assets/img/E-commerce.png";
 import Pereolder  from "../../assets/img/Animation.gif";
+import { useUser } from "../../contexts/UserContext";
+import UserImage from "../../assets/img/defaultProfile.png";
 
 function HomePage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -18,6 +20,9 @@ function HomePage() {
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const navigate = useNavigate();
+  const { user, logout } = useUser();
+  const profilePicture1 = user?.profile_picture || UserImage;
+  const [isAvatarMenuOpen, setIsAvatarMenuOpen] = useState(false);
   
   // Категорияларды жүктеу
   useEffect(() => {
@@ -63,14 +68,138 @@ function HomePage() {
   }, []);
   return (
     <div className="">
+      {/* Mobile Header - OUTSIDE of .content and .container */}
+      {isMobile && (
+        <div style={{
+          backgroundColor: '#fff',
+          height: '56px',
+          width: '100%',
+          borderBottom: '1px solid #e0e0e0',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0 16px',
+          boxShadow: 'none',
+          margin: 0,
+          position: 'relative',
+          zIndex: 10
+        }}>
+          {/* Hamburger Menu */}
+          <button 
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: '8px',
+              cursor: 'pointer'
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          {/* Title */}
+          <h5 style={{ 
+            margin: 0, 
+            fontSize: '18px', 
+            fontWeight: '600',
+            color: '#2d3748',
+            flex: 1,
+            textAlign: 'center'
+          }}>
+            Home
+          </h5>
+          {/* User Avatar */}
+          <div style={{ position: 'relative' }}>
+            <div
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                backgroundColor: '#4880FF',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                fontWeight: '600',
+                fontSize: '14px',
+                cursor: 'pointer'
+              }}
+              onClick={() => setIsAvatarMenuOpen((prev) => !prev)}
+            >
+              <img
+                src={profilePicture1}
+                alt="user-image"
+                width="32"
+                height="32"
+                className="rounded-circle"
+                onError={e => { e.target.onerror = null; e.target.src = UserImage; }}
+              />
+            </div>
+            {isAvatarMenuOpen && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '110%',
+                  right: 0,
+                  background: '#fff',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                  borderRadius: '10px',
+                  zIndex: 1000,
+                  minWidth: '140px',
+                  padding: '8px 0'
+                }}
+              >
+                <button
+                  style={{
+                    width: '100%',
+                    background: 'none',
+                    border: 'none',
+                    padding: '10px 16px',
+                    textAlign: 'left',
+                    fontSize: '15px',
+                    color: '#2d3748',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => {
+                    setIsAvatarMenuOpen(false);
+                    navigate('/settings');
+                  }}
+                >
+                  My Account
+                </button>
+                <button
+                  style={{
+                    width: '100%',
+                    background: 'none',
+                    border: 'none',
+                    padding: '10px 16px',
+                    textAlign: 'left',
+                    fontSize: '15px',
+                    color: '#dc3545',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => {
+                    setIsAvatarMenuOpen(false);
+                    logout();
+                    navigate('/login');
+                  }}
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       <div className="d-flex">
-        {/* Only show Sidebar on desktop */}
-        {/* {!isMobile && ( */}
-          <Sidebar  isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(false)} />
-        {/* )} */}
+        <Sidebar  isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(false)} />
         <div className={`content ${isSidebarOpen ? "collapsed" : ""}`} style={isMobile ? { marginLeft: 0 } : {}}>
-          <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-          <div style={{ marginTop: "60px" }}>
+          {/* Desktop Header */}
+          {!isMobile && <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />}
+          <div style={{ marginTop: isMobile ? "0px" : "60px" }}>
             <div className="container">
               <ReusableHeading text="Rent anything in any time, don't think just do it" />
               <Carousel isMobile={isMobile} />
