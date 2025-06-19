@@ -10,6 +10,7 @@ function SettingsPage() {
   const [activeTab, setActiveTab] = useState("info");
   const [profilePicturePreview, setProfilePicturePreview] = useState("");
   const [isMobile, setIsMobile] = useState(false);
+  const [isAvatarMenuOpen, setIsAvatarMenuOpen] = useState(false);
 
   const [profileData, setProfileData] = useState({
     full_name: "",
@@ -265,29 +266,88 @@ function SettingsPage() {
           </h5>
 
           {/* User Avatar */}
-          <div style={{
-            width: '36px',
-            height: '36px',
-            borderRadius: '50%',
-            backgroundColor: '#4880FF',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'white',
-            fontWeight: '600',
-            fontSize: '14px'
-          }}>
-            <img
-                          src={profilePicture1 || UserImage}
-                          alt="user-image"
-                          width="32"
-                          height="32"
-                          className="rounded-circle"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = UserImage;
-                          }}
-                        />
+          <div style={{ position: 'relative' }}>
+            <div
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                backgroundColor: '#4880FF',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                fontWeight: '600',
+                fontSize: '14px',
+                cursor: 'pointer'
+              }}
+              onClick={() => setIsAvatarMenuOpen((prev) => !prev)}
+            >
+              <img
+                src={profilePicture1 || UserImage}
+                alt="user-image"
+                width="32"
+                height="32"
+                className="rounded-circle"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = UserImage;
+                }}
+              />
+            </div>
+            {isAvatarMenuOpen && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '110%',
+                  right: 0,
+                  background: '#fff',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                  borderRadius: '10px',
+                  zIndex: 1000,
+                  minWidth: '140px',
+                  padding: '8px 0'
+                }}
+              >
+                <button
+                  style={{
+                    width: '100%',
+                    background: 'none',
+                    border: 'none',
+                    padding: '10px 16px',
+                    textAlign: 'left',
+                    fontSize: '15px',
+                    color: '#2d3748',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => {
+                    setIsAvatarMenuOpen(false);
+                    window.location.href = '/myprofile'; // or your profile page route
+                  }}
+                >
+                  My Account
+                </button>
+                <button
+                  style={{
+                    width: '100%',
+                    background: 'none',
+                    border: 'none',
+                    padding: '10px 16px',
+                    textAlign: 'left',
+                    fontSize: '15px',
+                    color: '#dc3545',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => {
+                    setIsAvatarMenuOpen(false);
+                    localStorage.removeItem('userData');
+                    window.location.href = '/';
+                  }}
+                >
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
