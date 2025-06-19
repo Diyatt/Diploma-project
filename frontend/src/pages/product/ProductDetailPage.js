@@ -47,7 +47,7 @@ function ProductDetailPage() {
   const handleWishlist = async () => {
     try {
       if (!userData?.id) {
-        alert("Сіз жүйеге кірмегенсіз!");
+        alert("You are not logged in!");
         return;
       }
 
@@ -58,7 +58,7 @@ function ProductDetailPage() {
       } else {
         // ✅ Таңдаулылардан өшіру
         if (!product.wishlist_id) {
-          alert("Өнім ID табылмады.");
+          alert("Product ID not found.");
           return;
         }
 
@@ -67,7 +67,7 @@ function ProductDetailPage() {
       }
     } catch (error) {
       console.error("Тізім өңдеу қатесі:", error);
-      alert("Қате орын алды. Қайта көріңіз.");
+      alert("An error occurred. Please try again.");
     }
   };
 
@@ -79,7 +79,7 @@ function ProductDetailPage() {
 
       const userId = userData?.id;
       if (!userId) {
-        alert("Сіз жүйеге кірмегенсіз!");
+        alert("You are not logged in!");
         return;
       }
 
@@ -90,14 +90,14 @@ function ProductDetailPage() {
         comment: newComment,
       });
 
-      alert("Пікір сәтті қосылды!");
+      alert("Review added successfully!");
       const res = await api.get(`/products/${id}/reviews/`);
       setReviews(res.data);
       setNewComment("");
       setNewRating(0);
     } catch (error) {
       console.error("Пікір жіберу қатесі:", error.response?.data || error);
-      alert("Қате орын алды: " + JSON.stringify(error.response?.data));
+      alert("An error occurred: " + JSON.stringify(error.response?.data));
     } finally {
       setIsSubmitting(false);
     }

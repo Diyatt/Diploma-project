@@ -4,6 +4,7 @@ import api from "../../utils/api";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Header from "../../components/Header/Header";
 import Pereolder from "../../assets/img/Animation.gif";
+import UserImage from "../../assets/img/defaultProfile.png";
 
 function ChatPage() {
   const { chatId } = useParams();
@@ -128,9 +129,23 @@ function ChatPage() {
                 justifyContent: 'center',
                 color: 'white',
                 fontWeight: '600',
-                fontSize: '16px'
+                fontSize: '16px',
+                overflow: 'hidden'
               }}>
-                {chatUser?.full_name?.charAt(0) || chatUser?.username?.charAt(0) || 'U'}
+                {chatUser?.profile_picture ? (
+                  <img
+                    src={chatUser.profile_picture}
+                    alt={chatUser?.full_name || chatUser?.username || 'User'}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                    onError={e => { e.target.onerror = null; e.target.src = UserImage; }}
+                  />
+                ) : (
+                  <img
+                    src={UserImage}
+                    alt="Default User"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                  />
+                )}
               </div>
 
               {/* User Name */}
@@ -144,15 +159,6 @@ function ChatPage() {
                 }}>
                   {chatUser?.full_name || chatUser?.username || "User"}
                 </h5>
-                <p style={{
-                  margin: 0,
-                  fontSize: '12px',
-                  color: '#68737d',
-                  marginTop: '1px',
-                  lineHeight: '1.2'
-                }}>
-                  Online
-                </p>
               </div>
             </div>
 
@@ -264,7 +270,10 @@ function ChatPage() {
               alignItems: 'center',
               gap: '12px',
               boxShadow: '0 -2px 8px rgba(0,0,0,0.05)',
-              flexShrink: 0
+              flexShrink: 0,
+              position: 'sticky',
+              bottom: 0,
+              zIndex: 10
             }}>
               {/* Text Input */}
               <div style={{

@@ -196,10 +196,10 @@ function SettingsPage() {
       localStorage.setItem("userData", JSON.stringify(updatedUserData));
       setProfilePicturePreview(updatedUserData.profile_picture);
       
-      alert("✅ Профиль сәтті жаңартылды!");
+      alert("✅ Profile updated successfully!");
     } catch (err) {
       console.error("Profile update error:", err);
-      alert("❌ Қате: Профиль жаңартылмады");
+      alert("❌ Error: Profile not updated");
     }
   };
 
@@ -212,9 +212,9 @@ function SettingsPage() {
     e.preventDefault();
     try {
       await api.post("/users/change-password/", passwordData);
-      alert("✅ Құпиясөз сәтті өзгертілді!");
+      alert("✅ Password changed successfully!");
     } catch (err) {
-      alert("❌ Қате: Құпиясөз өзгертілмеді");
+      alert("❌ Error: Password not changed");
     }
   };
 
@@ -740,7 +740,7 @@ function SettingsPage() {
                   onClick={async () => {
                     if (
                       window.confirm(
-                        "Аккаунтыңызды өшіргіңіз келетініне сенімдісіз бе? Бұл әрекет қайтымсыз!"
+                        "Are you sure you want to delete your account? This action cannot be undone!"
                       )
                     ) {
                       try {
@@ -1261,7 +1261,7 @@ function SettingsPage() {
                   onClick={async () => {
                     if (
                       window.confirm(
-                        "Аккаунтыңызды өшіргіңіз келетініне сенімдісіз бе? Бұл әрекет қайтымсыз!"
+                        "Are you sure you want to delete your account? This action cannot be undone!"
                       )
                     ) {
                       try {
@@ -1549,7 +1549,7 @@ function SettingsPage() {
                         onClick={async () => {
                           if (
                             window.confirm(
-                              "Аккаунтыңызды өшіргіңіз келетініне сенімдісіз бе? Бұл әрекет қайтымсыз!"
+                              "Are you sure you want to delete your account? This action cannot be undone!"
                             )
                           ) {
                             try {

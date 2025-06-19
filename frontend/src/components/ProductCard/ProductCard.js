@@ -11,7 +11,7 @@ function ProductCard({ id, title, price, images, rating, reviews, is_favorite, l
   const handleWishlist = async () => {
     try {
       if (!user || !user.id) {
-        alert("Сіз жүйеге кірмегенсіз!");
+        alert("You are not logged in!");
         return;
       }
 
@@ -23,7 +23,7 @@ function ProductCard({ id, title, price, images, rating, reviews, is_favorite, l
       } else {
         // ✅ Таңдаулылардан өшіру
         if (!wishlistId) {
-          alert("Өнім ID табылмады.");
+          alert("Product ID not found.");
           return;
         }
 
@@ -33,7 +33,7 @@ function ProductCard({ id, title, price, images, rating, reviews, is_favorite, l
       }
     } catch (error) {
       console.error("Тізім өңдеу қатесі:", error);
-      alert("Қате орын алды. Қайта көріңіз.");
+      alert("An error occurred. Please try again.");
     }
   };
 
