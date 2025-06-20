@@ -36,8 +36,8 @@ class ChatBotView(APIView):
                 products = search_items(category, keywords)
                 if products.exists():
                     # Формируем список найденных товаров
-                    response_text = f"Found {products.count()} alternatives:\n" + "\n".join(
-                        [f"- {p.name} ({p.price} ₸/day): {'https://arent-kz.up.railway.app/product'}/{p.id}" for p in products]
+                    response_text = f"Found {products.count()} alternatives:\n\n" + "\n".join(
+                        [f"• {p.name} ({p.price} ₸/day)\n: {'https://arent-kz.up.railway.app/product'}/{p.id}" for p in products]
                     )
 
                 else:
